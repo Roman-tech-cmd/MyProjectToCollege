@@ -6,148 +6,92 @@ using DG.Tweening;
 
 public class TileManager : MonoBehaviour
 {
+
+    [Header("=== UI ОСНОВНЫЕ ЭЛЕМЕНТЫ ===")]
     [SerializeField] private GameObject blockMenu;
     public GameObject BlockMenu => blockMenu;
+
     [SerializeField] private GameObject blockMenu2;
     public GameObject BlockMenu2 => blockMenu2;
-    [SerializeField] private TileQuestion[] _tiles;
-    public TileQuestion[] Tiles
+
+    [SerializeField] private GameObject textMenu;
+    public GameObject TextMenu
     {
-        get { return _tiles; }
-        set
-        {
-            _tiles = value;
-        }
+        get => textMenu;
+        set => textMenu = value;
     }
-    private TileQuestion selectedTiles;
-    public TileQuestion SelectedTiles{
-        get { return selectedTiles; }
-        set
-        {
-            if (selectedTiles == value)
-            {
-                if (selectedTiles != null)
-                {
-                    selectedTiles.transform.DOScale(1f, 0.2f);
-                }
-                selectedTiles = null;
-                return;
-            }
-
-            if (selectedTiles != null)
-            {
-                selectedTiles.transform.DOScale(1f, 0.2f);
-
-            }
-
-            selectedTiles = value;
-            if (selectedTiles != null)
-            {
-                selectedTiles.transform.DOScale(0.9f, 0.2f);
-                print(selectedTiles.IdQuestion);
-            }
-        }       
-    }
-    [SerializeField] private TextMeshProUGUI textQuestion;
-    public TextMeshProUGUI TextQuestion => textQuestion;
-    [SerializeField] private TextMeshProUGUI numQuestion;
-    public TextMeshProUGUI NumQuestion => numQuestion;
-    [SerializeField] private GameObject[] buttons;
-    [SerializeField] private TextMeshProUGUI hintsTextUI;
-    [SerializeField] private Image hintsImage;
 
     [SerializeField] private GameObject hintMenu;
     public GameObject HintMenu
     {
-        get
-        {
-            return hintMenu; 
-        }
-        set
-        {
-            hintMenu = value;
-        }
-    }
-    [SerializeField] private GameObject textMenu;
-    public GameObject TextMenu
-    {
-        get
-        {
-            return textMenu; 
-        }
-        set
-        {
-            textMenu = value;
-        }
+        get => hintMenu;
+        set => hintMenu = value;
     }
 
+    [SerializeField] private GameObject borderUI;
+
+    [Space(10)]
+    [SerializeField] private TextMeshProUGUI textQuestion;
+    public TextMeshProUGUI TextQuestion => textQuestion;
+
+    [SerializeField] private TextMeshProUGUI numQuestion;
+    public TextMeshProUGUI NumQuestion => numQuestion;
+
+    [SerializeField] private TextMeshProUGUI hintsTextUI;
+
+    [Space(10)]
+    [SerializeField] private Image hintsImage;
+    [SerializeField] private GameObject hintObject;
+
+
+    [Header("=== КНОПКИ ОТВЕТОВ ===")]
+    [SerializeField] private GameObject[] buttons;
+
+
+    [Header("=== СПИСОК ТАЙЛОВ ===")]
+    [SerializeField] private TileQuestion[] _tiles;
+    public TileQuestion[] Tiles
+    {
+        get { return _tiles; }
+        set => _tiles = value;
+    }
+
+
+    [Header("=== БЛОКИ ЗАДАНИЙ (TILE BOXES) ===")]
     [SerializeField] private GameObject TileBox1;
+    [SerializeField] private GameObject TileBox2;
+    [SerializeField] private GameObject TileBox3;
+
+
+    [Header("=== КНОПКИ ВЫБОРА БЛОКОВ ===")]
     [SerializeField] private Button buttonTileBox1;
+    [SerializeField] private Button buttonTileBox2;
+    [SerializeField] private Button buttonTileBox3;
+
+
+    [Header("=== СОСТОЯНИЕ БЛОКОВ ===")]
     [SerializeField] private bool isTileBox1Solved;
     public bool IsTileBox1Solved
     {
-        get
-        {
-            return isTileBox1Solved; 
-        }
-        set
-        {
-            isTileBox1Solved = value;
-        }
+        get => isTileBox1Solved;
+        set => isTileBox1Solved = value;
     }
 
-    [SerializeField] private GameObject TileBox2;
-    [SerializeField] private Button buttonTileBox2;
     [SerializeField] private bool isTileBox2Solved;
-    public bool IsTileBox2Solved{
-        get
-        {
-            return isTileBox2Solved; 
-        }
-        set
-        {
-            isTileBox2Solved = value;
-        }
-    }
-
-    [SerializeField] private GameObject TileBox3;
-    [SerializeField] private Button buttonTileBox3;
-    [SerializeField] private bool isTileBox3Solved;
-    public bool IsTileBox3Solved{
-        get
-        {
-            return isTileBox3Solved; 
-        }
-        set
-        {
-            isTileBox3Solved = value;
-        }
-    }
-
-    private GameObject activeTileBox;
-    public GameObject ActiveTileBox
+    public bool IsTileBox2Solved
     {
-        get { return activeTileBox; }
-        set
-        {
-            if (activeTileBox == value)
-            {
-                if (activeTileBox != null)
-                {
-                    return;
-                }
-            }
-
-            if (activeTileBox != null)
-            {
-                activeTileBox.GetComponent<TileBox>().SetTileUnselected();
-            }
-
-            activeTileBox = value;
-        }
-        
-        
+        get => isTileBox2Solved;
+        set => isTileBox2Solved = value;
     }
+
+    [SerializeField] private bool isTileBox3Solved;
+    public bool IsTileBox3Solved
+    {
+        get => isTileBox3Solved;
+        set => isTileBox3Solved = value;
+    }
+
+    [Header("=== АКТИВНЫЕ ЭЛЕМЕНТЫ ===")]
     [SerializeField] private Button activeTileBoxButton;
     public Button ActiveTileBoxButton
     {
@@ -168,8 +112,42 @@ public class TileManager : MonoBehaviour
         }
     }
 
-    [SerializeField] private GameObject borderUI;
-    private Image img;
+    private TileQuestion selectedTiles;
+    public TileQuestion SelectedTiles
+    {
+        get { return selectedTiles; }
+        set
+        {
+            if (selectedTiles == value)
+            {
+                if (selectedTiles != null) selectedTiles.transform.DOScale(1f, 0.2f);
+                selectedTiles = null;
+                return;
+            }
+
+            if (selectedTiles != null) selectedTiles.transform.DOScale(1f, 0.2f);
+
+            selectedTiles = value;
+
+            if (selectedTiles != null) selectedTiles.transform.DOScale(0.9f, 0.2f);
+        }
+    }
+
+    private GameObject activeTileBox;
+    public GameObject ActiveTileBox
+    {
+        get { return activeTileBox; }
+        set
+        {
+            if (activeTileBox == value)
+            {
+                if (activeTileBox != null) return;
+            }
+
+            if (activeTileBox != null) activeTileBox.GetComponent<TileBox>().SetTileUnselected();
+            activeTileBox = value;
+        }
+    }
 
     public void RecheckTiles()
     {
@@ -189,11 +167,6 @@ public class TileManager : MonoBehaviour
                 numQuestion.text = tile.IdQuestion.ToString()+".";
             }
         }
-    }
-
-    private void Start()
-    {
-        img = GameObject.FindGameObjectWithTag("HintsImage").GetComponent<Image>();
     }
 
     void Update()
@@ -237,31 +210,8 @@ public class TileManager : MonoBehaviour
         }
         else
         {
-
-            //textMenu.transform.DOLocalMoveY(-770, 0.5f);
             ClearInfo();
         }
-        
-
-        //if (isTileBox1Solved == false)
-        //{
-        //    buttonTileBox2.interactable = false;
-        //}
-        //else
-        //{
-        //    buttonTileBox2.interactable = true;
-        //}
-
-
-        //if (isTileBox2Solved == false)
-        //{
-        //    buttonTileBox3.interactable = false;
-        //}
-        //else
-        //{
-        //    buttonTileBox3.interactable = true;
-        //}        
-
     }
 
     public void ClearInfo()
@@ -278,8 +228,6 @@ public class TileManager : MonoBehaviour
         selectedTiles = null;
     }
     
-
-
     public void SetTileBox(int NumBox)
     {        
         switch (NumBox)
@@ -287,52 +235,30 @@ public class TileManager : MonoBehaviour
             case 1:
                 
                 TileBox1.SetActive(true);
-
                 TileBox2.SetActive(false);
-
                 TileBox3.SetActive(false);
-
                 ActiveTileBox = TileBox1;
                 ActiveTileBoxButton = buttonTileBox1;
                 ClearInfo();
                 break;
             case 2: 
-                //if (isTileBox1Solved)
-                //{
-                    TileBox1.SetActive(false);
-
-                    TileBox2.SetActive(true);
-
-                    TileBox3.SetActive(false);
-
-                    ActiveTileBox = TileBox2;
-                    ClearInfo();
-                    selectedTiles = null;
-                    ActiveTileBoxButton = buttonTileBox2;
-                ClearInfo();
-                //}     
+                TileBox1.SetActive(false);
+                TileBox2.SetActive(true);
+                TileBox3.SetActive(false);
+                ActiveTileBox = TileBox2;
+                ActiveTileBoxButton = buttonTileBox2;
+                ClearInfo();   
                 break;
             case 3:
-                //if (isTileBox1Solved && isTileBox2Solved)
-                //{
-                    TileBox1.SetActive(false);
-
-                    TileBox2.SetActive(false);
-
-                    TileBox3.SetActive(true);
-
-                    ActiveTileBox = TileBox3;
-                   
-                    selectedTiles = null;
-                    ActiveTileBoxButton = buttonTileBox3;
-                    ClearInfo();
-                //}
+                TileBox1.SetActive(false);
+                TileBox2.SetActive(false);
+                TileBox3.SetActive(true);
+                ActiveTileBox = TileBox3;
+                ActiveTileBoxButton = buttonTileBox3;
+                ClearInfo();
                 break;
         }
     }
-
-
-
 
     public void SetSelectTile(TileQuestion tile)
     {
@@ -441,13 +367,13 @@ public class TileManager : MonoBehaviour
                     TileQuestion tile = selectedTiles.GetComponent<TileQuestion>();
                     if (tile.HintsImage != null)
                     {
-                        hintsImage.gameObject.SetActive(true);
-                        img.sprite = selectedTiles.GetComponent<TileQuestion>().HintsImage;
+                        hintObject.gameObject.SetActive(true);
+                        hintsImage.sprite = selectedTiles.GetComponent<TileQuestion>().HintsImage;
                     }
                 }
                 else
                 {
-                    hintsImage.gameObject.SetActive(false);
+                    hintObject.gameObject.SetActive(false);
                     hintsTextUI.gameObject.SetActive(true);
                     hintsTextUI.text = SelectedTiles.Hints;
                 }
@@ -518,8 +444,4 @@ public class TileManager : MonoBehaviour
             cardImage.GetComponent<TileQuestion>().NumQuestion.text = "";
         }); ;
     }
-    
-    
-
-
 }

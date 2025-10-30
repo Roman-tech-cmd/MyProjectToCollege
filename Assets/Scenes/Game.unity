@@ -2059,6 +2059,7 @@ GameObject:
   m_Component:
   - component: {fileID: 467743070}
   - component: {fileID: 467743071}
+  - component: {fileID: 467743072}
   m_Layer: 0
   m_Name: TileManager
   m_TagString: TileManager
@@ -2095,30 +2096,55 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TileManager
   blockMenu: {fileID: 242426881}
   blockMenu2: {fileID: 1739174755}
-  _tiles:
-  - {fileID: 258680868}
+  textMenu: {fileID: 1285800439}
+  hintMenu: {fileID: 1116610922}
+  borderUI: {fileID: 1618559566}
   textQuestion: {fileID: 1958577884}
   numQuestion: {fileID: 952531889}
+  hintsTextUI: {fileID: 1922759133}
+  hintsImage: {fileID: 1444359200}
+  hintObject: {fileID: 572105965}
   buttons:
   - {fileID: 1779319476}
   - {fileID: 2097022726}
   - {fileID: 316362557}
   - {fileID: 679838124}
-  hintsTextUI: {fileID: 1922759133}
-  hintsImage: {fileID: 572105967}
-  hintMenu: {fileID: 1116610922}
-  textMenu: {fileID: 1285800439}
+  _tiles:
+  - {fileID: 258680868}
   TileBox1: {fileID: 1144621184}
-  buttonTileBox1: {fileID: 1384385697}
-  isTileBox1Solved: 0
   TileBox2: {fileID: 866364926}
-  buttonTileBox2: {fileID: 7379244355260082703}
-  isTileBox2Solved: 0
   TileBox3: {fileID: 1058277397}
+  buttonTileBox1: {fileID: 1384385697}
+  buttonTileBox2: {fileID: 7379244355260082703}
   buttonTileBox3: {fileID: 2007353711}
+  isTileBox1Solved: 0
+  isTileBox2Solved: 0
   isTileBox3Solved: 0
   activeTileBoxButton: {fileID: 0}
-  borderUI: {fileID: 1618559566}
+--- !u!114 &467743072
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 467743068}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d502d9b1ff1d67c408191232db121a3c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RandomQuestions
+  questions1Box:
+  - {fileID: 11400000, guid: ee69a07662e31b34982b9d017ae1561b, type: 2}
+  - {fileID: 11400000, guid: ccbeb175d21b14a4e8be39b6e24e70e9, type: 2}
+  - {fileID: 11400000, guid: b0eb520025f158548be50fa45e2e72fd, type: 2}
+  - {fileID: 11400000, guid: 97088bbab4c92d64790737e7ebb1dd9c, type: 2}
+  - {fileID: 11400000, guid: bd98958f3303166448b9088ae384a7b3, type: 2}
+  - {fileID: 11400000, guid: 6305d787feb0da84cb7f636fdd2c3d2a, type: 2}
+  - {fileID: 11400000, guid: cef9b679e9fdf0a49a56f8e0cc62e315, type: 2}
+  - {fileID: 11400000, guid: d33606c26af50614db4f0cabc9ed63f9, type: 2}
+  - {fileID: 11400000, guid: 12cf2c154b4aa3042a70c6e45472de14, type: 2}
+  questions2Box: []
+  questions3Box: []
 --- !u!1 &502960779
 GameObject:
   m_ObjectHideFlags: 0
@@ -2509,7 +2535,7 @@ GameObject:
   - component: {fileID: 572105968}
   - component: {fileID: 572105967}
   m_Layer: 5
-  m_Name: Border
+  m_Name: HintsObj
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
