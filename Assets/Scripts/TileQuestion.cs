@@ -57,7 +57,7 @@ public class TileQuestion : MonoBehaviour, IPointerClickHandler
     public Sprite HintsImage => hintsImage;
 
     // --- СОБЫТИЯ ---
-    public static event Action OnQuestionSolved;
+    //public static event Action OnQuestionSolved;
 
     // --- МЕТОДЫ ---
 

@@ -11,7 +11,7 @@ public class Restarter : MonoBehaviour
         {
             if (_instance == null)
             {
-                _instance = FindObjectOfType<Restarter>();
+                _instance = FindFirstObjectByType<Restarter>();
 
                 if (_instance == null)
                 {

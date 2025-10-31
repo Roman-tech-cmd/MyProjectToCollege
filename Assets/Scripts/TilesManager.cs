@@ -112,7 +112,7 @@ public class TileManager : MonoBehaviour
         }
     }
 
-    private TileQuestion selectedTiles;
+    [SerializeField] private TileQuestion selectedTiles;
     public TileQuestion SelectedTiles
     {
         get { return selectedTiles; }
@@ -225,7 +225,7 @@ public class TileManager : MonoBehaviour
         {
             button.SetActive(false);
         }
-        selectedTiles = null;
+        SelectedTiles = null;
     }
     
     public void SetTileBox(int NumBox)

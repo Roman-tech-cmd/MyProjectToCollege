@@ -12,7 +12,7 @@ public class GameManager : MonoBehaviour
         {
             if (_instance == null)
             {
-                _instance = FindObjectOfType<GameManager>();
+                _instance = FindFirstObjectByType<GameManager>();
 
                 if (_instance == null)
                 {
@@ -49,9 +49,10 @@ public class GameManager : MonoBehaviour
 
     public void GoToMainMenu()
     {
+        tileManager.ClearInfo();
         SceneMenu.SetActive(true);
         SceneGame.SetActive(false);
-        SceneEnd.SetActive(false);
+        SceneEnd.SetActive(false);    
     }
 
     public void QuitGame()
