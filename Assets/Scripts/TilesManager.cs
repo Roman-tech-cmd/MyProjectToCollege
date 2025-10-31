@@ -206,7 +206,7 @@ public class TileManager : MonoBehaviour
             {
                 button.SetActive(true);
             }
-            textMenu.transform.DOLocalMoveY(-400, 0.5f);
+            textMenu.transform.DOLocalMoveY(-370f, 0.5f);
         }
         else
         {
