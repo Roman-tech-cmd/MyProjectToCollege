@@ -206,7 +206,7 @@ public class TileManager : MonoBehaviour
             {
                 button.SetActive(true);
             }
-            textMenu.transform.DOLocalMoveY(-370, 0.5f);
+            textMenu.transform.DOLocalMoveY(-400, 0.5f);
         }
         else
         {
@@ -218,8 +218,8 @@ public class TileManager : MonoBehaviour
     {
         textQuestion.text = "";
         hintsTextUI.text = "";
-        textMenu.transform.DOLocalMoveY(-770, 0.5f);
-        hintMenu.transform.DOLocalMoveX(1230, 0.5f);
+        textMenu.transform.DOLocalMoveY(-780, 0.5f);
+        hintMenu.transform.DOLocalMoveX(1330, 0.5f);
         numQuestion.text = "";
         foreach (GameObject button in buttons)
         {
@@ -303,7 +303,7 @@ public class TileManager : MonoBehaviour
             button.GetComponent<Image>().color = Color.white;
         }
 
-        hintMenu.transform.DOLocalMoveX(1230, 0.5f);
+        hintMenu.transform.DOLocalMoveX(1330, 0.5f);
         hintsTextUI.text = "";
 
         if (selectedTiles.IsSolved) blockMenu.SetActive(true);
@@ -326,21 +326,21 @@ public class TileManager : MonoBehaviour
                     if (activeTileBox.GetComponent<TileBox>().CheckBoxToSolve())
                     {
                         isTileBox1Solved = true;
-                        HintMenu.transform.DOLocalMoveX(1230, 0.5f);
+                        HintMenu.transform.DOLocalMoveX(1330, 0.5f);
                     }
                     break;
                 case 2:
                     if (activeTileBox.GetComponent<TileBox>().CheckBoxToSolve())
                     {
                         isTileBox2Solved = true;
-                        HintMenu.transform.DOLocalMoveX(1230, 0.5f);
+                        HintMenu.transform.DOLocalMoveX(1330, 0.5f);
                     }
                     break;
                 case 3:
                     if (activeTileBox.GetComponent<TileBox>().CheckBoxToSolve())
                     {
                         isTileBox3Solved = true;
-                        HintMenu.transform.DOLocalMoveX(1230, 0.5f);
+                        HintMenu.transform.DOLocalMoveX(1330, 0.5f);
                     }
                     break;
             }
