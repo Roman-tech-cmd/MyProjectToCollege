@@ -44,6 +44,7 @@ public class GameManager : MonoBehaviour
         SceneMenu.SetActive(false);
         SceneGame.SetActive(true);
         SceneEnd.SetActive(false);
+        
 
     }
 

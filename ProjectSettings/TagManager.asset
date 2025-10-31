@@ -8,6 +8,7 @@ TagManager:
   - BTN_GoToMenu
   - ConfirmationPanel
   - HintsImage
+  - PointButton
   layers:
   - Default
   - TransparentFX
