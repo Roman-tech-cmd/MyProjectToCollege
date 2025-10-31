@@ -3,6 +3,7 @@ using UnityEngine;
 public class TileBox : MonoBehaviour
 {
     [SerializeField] private GameObject[] tiles;
+    public GameObject[] Tiles => tiles;
     [SerializeField] private int idBox;
     public int IdBox => idBox;
 

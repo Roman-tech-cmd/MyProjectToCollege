@@ -2133,6 +2133,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d502d9b1ff1d67c408191232db121a3c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RandomQuestions
+  TileBox1: {fileID: 1144621187}
   questions1Box:
   - {fileID: 11400000, guid: ee69a07662e31b34982b9d017ae1561b, type: 2}
   - {fileID: 11400000, guid: ccbeb175d21b14a4e8be39b6e24e70e9, type: 2}
@@ -2143,7 +2144,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: cef9b679e9fdf0a49a56f8e0cc62e315, type: 2}
   - {fileID: 11400000, guid: d33606c26af50614db4f0cabc9ed63f9, type: 2}
   - {fileID: 11400000, guid: 12cf2c154b4aa3042a70c6e45472de14, type: 2}
+  TileBox2: {fileID: 866364928}
   questions2Box: []
+  TileBox3: {fileID: 0}
   questions3Box: []
 --- !u!1 &502960779
 GameObject:
