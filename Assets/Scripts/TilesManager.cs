@@ -314,7 +314,6 @@ public class TileManager : MonoBehaviour
     {
         if (selectedAnswerIndex == selectedTiles.CorrectButtonId - 1)
         {
-            print("Правильно!");
             selectedTiles.IsSolved = true;
             blockMenu.SetActive(true);
             blockMenu2.SetActive(true);
@@ -349,7 +348,6 @@ public class TileManager : MonoBehaviour
         }
         else
         {
-            print("Неправильно!");
             blockMenu.SetActive(true);
             blockMenu2.SetActive(true);
             PlayExpressiveDenyAnimation(buttons[selectedAnswerIndex]);
