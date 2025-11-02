@@ -2,10 +2,12 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using DG.Tweening;
+using System;
 
 
 public class TileManager : MonoBehaviour
 {
+    public static event Action CounterIncorrectAnswer;
 
     [Header("=== UI ОСНОВНЫЕ ЭЛЕМЕНТЫ ===")]
     [SerializeField] private GameObject blockMenu;
@@ -353,6 +355,8 @@ public class TileManager : MonoBehaviour
             PlayExpressiveDenyAnimation(buttons[selectedAnswerIndex]);
 
             selectedTiles.WrongAttempts++;
+
+           CounterIncorrectAnswer?.Invoke();
 
             if (selectedTiles.WrongAttempts >= 2)
             {
