@@ -208,7 +208,7 @@ public class TileManager : MonoBehaviour
             {
                 button.SetActive(true);
             }
-            textMenu.transform.DOLocalMoveY(-370f, 0.5f);
+            textMenu.transform.DOLocalMoveY(-170f, 0.5f);
         }
         else
         {
@@ -220,7 +220,7 @@ public class TileManager : MonoBehaviour
     {
         textQuestion.text = "";
         hintsTextUI.text = "";
-        textMenu.transform.DOLocalMoveY(-780, 0.5f);
+        textMenu.transform.DOLocalMoveY(-850, 0.5f);
         hintMenu.transform.DOLocalMoveX(1330, 0.5f);
         numQuestion.text = "";
         foreach (GameObject button in buttons)
