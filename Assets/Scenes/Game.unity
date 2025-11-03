@@ -10164,7 +10164,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u0418\u0433\u0440\u0430\u0442\u044C \u0441 \u043D\u0430\u0447\u0430\u043B\u0430"
+  m_text: "\u0418\u0433\u0440\u0430\u0442\u044C \u0441\u043D\u0430\u0447\u0430\u043B\u0430"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 9e783fb88a491494a8de56feece3c7c0, type: 2}
   m_sharedMaterial: {fileID: 5883798315078568854, guid: 9e783fb88a491494a8de56feece3c7c0, type: 2}
@@ -12510,7 +12510,6 @@ GameObject:
   - component: {fileID: 4548400831664723964}
   - component: {fileID: 5693337446526666667}
   - component: {fileID: 8703598607739368916}
-  - component: {fileID: 8862929685441410097}
   m_Layer: 5
   m_Name: BTN_ToGoFinalMenu
   m_TagString: Untagged
@@ -12518,20 +12517,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 0
---- !u!114 &8862929685441410097
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8862929685441410096}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8dd94b0efef89924cb7ebd58bbe9fe5f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ButtonTakerQuestion
-  idButton: 1
-  tileManager: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
