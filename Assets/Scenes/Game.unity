@@ -6921,7 +6921,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TakerInfoFromBase
   Questions: []
   textQ: {fileID: 329329141}
-  dbPath: '"D:\UnityProject\MyProjectToCollege\Assets\StreamingAssets\QuestionDatabase.db"'
+  dbPath: D:\UnityProject\MyProjectToCollege\Assets\StreamingAssets\QuestionDatabase.db
 --- !u!114 &1102448489
 MonoBehaviour:
   m_ObjectHideFlags: 0

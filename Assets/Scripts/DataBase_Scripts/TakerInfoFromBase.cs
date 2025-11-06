@@ -1,16 +1,16 @@
 using UnityEngine;
+using System.Data;
+using Mono.Data.Sqlite;
 using System.Collections.Generic;
 using TMPro;
 using System.IO;
 using System.Collections;
 
-using Mono.Data.Sqlite;
-
-public class TakerInfoFromBase : MonoBehaviour
+public class TestDatabase : MonoBehaviour
 {
     public List<string> Questions;
     public TextMeshProUGUI textQ;
-    public string dbPath;
+    private string dbPath;
 
     void Start()
     {
@@ -22,46 +22,40 @@ public class TakerInfoFromBase : MonoBehaviour
     {
         textQ.text = "Загрузка базы данных...";
 
-        // УНИВЕРСАЛЬНЫЙ ПУТЬ - работает на всех платформах
-        //dbPath = Path.Combine(Application.persistentDataPath, "QuestionDatabase.db");
+        // Путь для БД - рядом с exe файлом для простоты доступа
+        dbPath = Path.Combine(Directory.GetCurrentDirectory(), "QuestionDatabase.db");
 
         Debug.Log($"Путь к БД: {dbPath}");
-        Debug.Log($"Persistent Data Path: {Application.persistentDataPath}");
+        Debug.Log($"Текущая директория: {Directory.GetCurrentDirectory()}");
 
-        // Проверяем существует ли БД
+        // Проверяем существует ли БД рядом с exe
         if (!File.Exists(dbPath))
         {
-            Debug.Log("БД не найдена, копируем из StreamingAssets...");
+            Debug.Log("БД не найдена рядом с exe, ищем в StreamingAssets...");
             yield return StartCoroutine(CopyDatabaseFromStreamingAssets());
         }
         else
         {
-            Debug.Log("БД найдена");
+            Debug.Log("БД найдена рядом с exe файлом");
             LoadQuestionsFromDatabase();
         }
     }
 
     IEnumerator CopyDatabaseFromStreamingAssets()
     {
+        // Правильный путь к StreamingAssets в билде
         string sourcePath = Path.Combine(Application.streamingAssetsPath, "QuestionDatabase.db");
 
         Debug.Log($"Ищем БД в: {sourcePath}");
 
-#if UNITY_ANDROID || UNITY_IOS || UNITY_WEBGL
-        // Для Android, iOS и WebGL
+#if UNITY_ANDROID || UNITY_WEBGL
+        // Для Android и WebGL
         using (var www = UnityEngine.Networking.UnityWebRequest.Get(sourcePath))
         {
             yield return www.SendWebRequest();
             
             if (www.result == UnityEngine.Networking.UnityWebRequest.Result.Success)
             {
-                // Создаем папку если её нет
-                string directory = Path.GetDirectoryName(dbPath);
-                if (!Directory.Exists(directory))
-                {
-                    Directory.CreateDirectory(directory);
-                }
-                
                 File.WriteAllBytes(dbPath, www.downloadHandler.data);
                 Debug.Log("БД скопирована из StreamingAssets!");
                 LoadQuestionsFromDatabase();
@@ -123,15 +117,14 @@ public class TakerInfoFromBase : MonoBehaviour
 
             Debug.Log($"Подключаемся к БД: {dbPath}");
 
-            // ИСПОЛЬЗУЕМ КОНКРЕТНЫЕ ТИПЫ ВМЕСТО ИНТЕРФЕЙСОВ
+            // Open connection
             string connectionString = "URI=file:" + dbPath;
-            SqliteConnection dbcon = new SqliteConnection(connectionString);
+            IDbConnection dbcon = new SqliteConnection(connectionString);
             dbcon.Open();
 
-            // Создаем команду и читатель через конкретные типы
-            SqliteCommand cmnd_read = dbcon.CreateCommand();
-            SqliteDataReader reader;
-
+            // Read and print all values in table
+            IDbCommand cmnd_read = dbcon.CreateCommand();
+            IDataReader reader;
             string query = "SELECT * FROM my_table";
             cmnd_read.CommandText = query;
             reader = cmnd_read.ExecuteReader();
@@ -164,30 +157,19 @@ public class TakerInfoFromBase : MonoBehaviour
 
     private void Update()
     {
-        //if (Input.GetKeyDown(KeyCode.E) && Questions != null && Questions.Count > 0)
-        //{
-        //    int r = Random.Range(0, Questions.Count);
-        //    textQ.SetText(Questions[r]);
-        //}
-
-        //// Для тестирования на Android
-        //if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
-        //{
-        //    if (Questions != null && Questions.Count > 0)
-        //    {
-        //        int r = Random.Range(0, Questions.Count);
-        //        textQ.SetText(Questions[r]);
-        //    }
-        //}
+        if (Input.GetKeyDown(KeyCode.E) && Questions != null && Questions.Count > 0)
+        {
+            int r = Random.Range(0, Questions.Count);
+            textQ.SetText(Questions[r]);
+        }
     }
 
     // Метод для отладки - покажет информацию о путях
     void OnGUI()
     {
         GUI.Label(new Rect(10, 10, 800, 20), $"DB Path: {dbPath}");
-        GUI.Label(new Rect(10, 30, 800, 20), $"Platform: {Application.platform}");
-        GUI.Label(new Rect(10, 50, 800, 20), $"Persistent Path: {Application.persistentDataPath}");
+        GUI.Label(new Rect(10, 30, 800, 20), $"Current Dir: {Directory.GetCurrentDirectory()}");
+        GUI.Label(new Rect(10, 50, 800, 20), $"StreamingAssets: {Application.streamingAssetsPath}");
         GUI.Label(new Rect(10, 70, 800, 20), $"DB Exists: {File.Exists(dbPath)}");
-        GUI.Label(new Rect(10, 90, 800, 20), $"Questions: {Questions?.Count ?? 0}");
     }
 }
