@@ -8,6 +8,7 @@ using System;
 public class TileManager : MonoBehaviour
 {
     public static event Action CounterIncorrectAnswer;
+    public static event Action CounterСorrectAnswer;
 
     [Header("=== UI ОСНОВНЫЕ ЭЛЕМЕНТЫ ===")]
     [SerializeField] private GameObject blockMenu;
@@ -325,6 +326,7 @@ public class TileManager : MonoBehaviour
             if (selectedTiles.WrongAttempts == 0)
             {
                 print("Ты ответил с первого раза! это Плюс 1");
+                CounterСorrectAnswer?.Invoke();
             }
 
             switch (activeTileBox.GetComponent<TileBox>().IdBox)
