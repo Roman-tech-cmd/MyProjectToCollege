@@ -36,6 +36,6 @@ MonoBehaviour:
   - "\u041C\u0438\u043D\u0441\u043A\u0430\u044F    \u043E\u0431\u043B\u0430\u0441\u0442\u044C"
   - "\u0413\u043E\u0440\u043E\u0434 \u041F\u043E\u043B\u043E\u0446\u043A"
   - "\u0413\u043E\u0440\u043E\u0434 \u041C\u0438\u043D\u0441\u043A"
-  correctIdButton: 1
+  correctAnswer: "\u0412\u0438\u0442\u0435\u0431\u0441\u043A\u0430\u044F \u043E\u0431\u043B\u0430\u0441\u0442\u044C"
   hints: 
   hintImage: {fileID: 8160774338420500295, guid: 364f8d1ae8987664db06a1ab45cfb9ba, type: 3}

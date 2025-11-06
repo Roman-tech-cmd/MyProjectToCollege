@@ -30,6 +30,13 @@ public class TileQuestion : MonoBehaviour, IPointerClickHandler
         set { wrongAttempts = value; }
     }
 
+    [SerializeField] private int tempWrongAttempts;
+    public int TempWrongAttempts
+    {
+        get { return tempWrongAttempts; }
+        set { tempWrongAttempts = value; }
+    }
+
     public bool IsSelected;
     public bool IsSolved;
 
@@ -44,7 +51,7 @@ public class TileQuestion : MonoBehaviour, IPointerClickHandler
     private Sprite imageQuestion;
     public Sprite ImageQuestion => imageQuestion;
 
-    private int correctButtonId;
+    public int correctButtonId;
     public int CorrectButtonId => correctButtonId;
 
     private string[] answerOptions;
@@ -67,6 +74,18 @@ public class TileQuestion : MonoBehaviour, IPointerClickHandler
         _numQuestion = GetComponentInChildren<TextMeshProUGUI>();
         if (_numQuestion != null)
             _numQuestion.text = idQuestion.ToString();
+        TransformationStringAnswerToIdButton();
+    }
+
+    public void TransformationStringAnswerToIdButton()
+    {
+        for (int i = 0;i< questionData.answerOptions.Length;i++)
+        {
+            if (questionData.answerOptions[i] == questionData.correctAnswer)
+            {
+                correctButtonId = i+1;
+            }
+        }
     }
 
     public void Inicialize()
@@ -78,7 +97,6 @@ public class TileQuestion : MonoBehaviour, IPointerClickHandler
         imageQuestion = takeImageFromData ? questionData.imageQuestion : imageQuestionHandler;
         answerOptions = questionData.answerOptions;
         hints = questionData.hints;
-        correctButtonId = questionData.correctIdButton;
         hintsImage = questionData.hintImage;
     }
 

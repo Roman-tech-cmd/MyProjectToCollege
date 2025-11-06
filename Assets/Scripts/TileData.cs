@@ -19,8 +19,11 @@ public class TileData : ScriptableObject
     [Tooltip("Массив с вариантами ответов (включая правильный)")]
     public string[] answerOptions;
     
-    [Tooltip("Правильный ответ")]
-    public int correctIdButton;
+    //[Tooltip("Правильный ответ номер кнопки")]
+    //public int correctIdButton;
+
+    [Tooltip("Правильный ответ текст")]
+    public string correctAnswer;
 
     [Header("Подсказки")]
     [Tooltip("Массив с подсказками к вопросу")]

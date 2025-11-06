@@ -11,6 +11,7 @@ public class TileManager : MonoBehaviour
 
     [Header("=== UI ОСНОВНЫЕ ЭЛЕМЕНТЫ ===")]
     [SerializeField] private GameObject blockMenu;
+    
     public GameObject BlockMenu => blockMenu;
 
     [SerializeField] private GameObject blockMenu2;
@@ -268,8 +269,6 @@ public class TileManager : MonoBehaviour
         SelectedTiles = tile;
         tile.IsSelected = true;
 
-        tile.WrongAttempts = 0;
-
         if (selectedTiles != null && textQuestion != null)
         {
             textQuestion.text = selectedTiles.Question;
@@ -322,6 +321,12 @@ public class TileManager : MonoBehaviour
             FlipCardColors(selectedTiles.GetComponent<RectTransform>(), selectedTiles.GetComponent<Image>(), Color.white, Color.green);
 
             PlayExpressiveSuccessAnimation(buttons[selectedAnswerIndex]);
+
+            if (selectedTiles.WrongAttempts == 0)
+            {
+                print("Ты ответил с первого раза! это Плюс 1");
+            }
+
             switch (activeTileBox.GetComponent<TileBox>().IdBox)
             {
                 case 1:
@@ -346,7 +351,7 @@ public class TileManager : MonoBehaviour
                     }
                     break;
             }
-            selectedTiles.WrongAttempts = 0;
+            selectedTiles.TempWrongAttempts = 0;
         }
         else
         {
@@ -355,10 +360,11 @@ public class TileManager : MonoBehaviour
             PlayExpressiveDenyAnimation(buttons[selectedAnswerIndex]);
 
             selectedTiles.WrongAttempts++;
+            selectedTiles.TempWrongAttempts++;
 
-           CounterIncorrectAnswer?.Invoke();
+            CounterIncorrectAnswer?.Invoke();
 
-            if (selectedTiles.WrongAttempts >= 2)
+            if (selectedTiles.TempWrongAttempts >= 2)
             {
                 hintMenu.transform.DOLocalMoveX(850, 0.5f);
                 hintsTextUI.text = SelectedTiles.Hints;
