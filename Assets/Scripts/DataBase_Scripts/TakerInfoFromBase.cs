@@ -10,140 +10,96 @@ public class TestDatabase : MonoBehaviour
 {
     public List<string> Questions;
     public TextMeshProUGUI textQ;
-    private string dbPath;
+
+    [SerializeField] private InfoFromDataBase infoFromDataBase;
+
 
     void Start()
     {
         Questions = new List<string>();
-        InitializeDatabase();
+        StartCoroutine(LoadDatabase());
     }
 
-    void InitializeDatabase()
+    IEnumerator LoadDatabase()
     {
-        textQ.text = "Загрузка базы данных...";
+        string dbPath = Path.Combine(Application.streamingAssetsPath, "QuestionDatabase.db");
 
-        // Всегда используем БД из StreamingAssets
-        dbPath = Path.Combine(Application.streamingAssetsPath, "QuestionDatabase.db");
-
-        Debug.Log($"Путь к БД: {dbPath}");
-
-        // Загружаем вопросы из базы
-        LoadQuestionsFromDatabase();
-    }
-
-    void LoadQuestionsFromDatabase()
-    {
-        try
-        {
-            // Для разных платформ разный способ доступа к файлу
 #if UNITY_ANDROID || UNITY_WEBGL
-            StartCoroutine(LoadDatabaseForMobile());
-#else
-            // Для Windows/Mac и редактора - прямой доступ к файлу
-            if (File.Exists(dbPath))
-            {
-                LoadQuestionsDirect();
-            }
-            else
-            {
-                Debug.LogError($"БД не найдена: {dbPath}");
-                textQ.text = "База данных не найдена";
-            }
-#endif
-        }
-        catch (System.Exception ex)
-        {
-            Debug.LogError($"Ошибка загрузки БД: {ex.Message}");
-            textQ.text = $"Ошибка: {ex.Message}";
-        }
-    }
-
-    IEnumerator LoadDatabaseForMobile()
-    {
-        // Для Android и WebGL загружаем через UnityWebRequest
+        // Для мобильных платформ и WebGL
         using (var www = UnityEngine.Networking.UnityWebRequest.Get(dbPath))
         {
             yield return www.SendWebRequest();
-
             if (www.result == UnityEngine.Networking.UnityWebRequest.Result.Success)
             {
-                // Создаем временный файл
                 string tempPath = Path.Combine(Application.persistentDataPath, "temp.db");
                 File.WriteAllBytes(tempPath, www.downloadHandler.data);
-
-                // Загружаем из временного файла
-                LoadQuestionsFromFile(tempPath);
-
-                // Удаляем временный файл
+                LoadQuestions(tempPath);
                 File.Delete(tempPath);
             }
-            else
-            {
-                Debug.LogError($"Ошибка загрузки: {www.error}");
-                textQ.text = $"Ошибка: {www.error}";
-            }
         }
+#else
+        // Для Windows/Mac и редактора
+        if (File.Exists(dbPath))
+        {
+            LoadQuestions(dbPath);
+        }
+        else
+        {
+            Debug.LogError("База данных не найдена");
+            textQ.text = "База данных не найдена";
+        }
+#endif
+
+        yield return null; // Добавляем возврат значения для всех путей
     }
 
-    void LoadQuestionsDirect()
+    void LoadQuestions(string path)
     {
-        // Прямая загрузка для Windows/Mac/Editor
-        string connectionString = "URI=file:" + dbPath;
-        using (IDbConnection dbcon = new SqliteConnection(connectionString))
+        try
         {
-            dbcon.Open();
-
-            using (IDbCommand cmd = dbcon.CreateCommand())
+            string connectionString = "URI=file:" + path;
+            using (IDbConnection dbcon = new SqliteConnection(connectionString))
             {
-                cmd.CommandText = "SELECT * FROM Questions";
-                using (IDataReader reader = cmd.ExecuteReader())
+                dbcon.Open();
+                using (IDbCommand cmd = dbcon.CreateCommand())
                 {
-                    Questions.Clear();
-
-                    while (reader.Read())
+                    cmd.CommandText = "SELECT * FROM Questions";
+                    using (IDataReader reader = cmd.ExecuteReader())
                     {
-                        string id = reader[0].ToString();
-                        Questions.Add("Вопрос " + id);
+                        Questions.Clear();
+                        while (reader.Read())
+                        {
+                            string id = reader[0].ToString();
+                            infoFromDataBase.QuestionsNationalCulture.Add("Вопрос " + id);
+                        }
+                    }
+                }
+                using (IDbCommand cmd = dbcon.CreateCommand())
+                {
+                    cmd.CommandText = "SELECT * FROM Questions";
+                    using (IDataReader reader = cmd.ExecuteReader())
+                    {
+                        Questions.Clear();
+                        while (reader.Read())
+                        {
+                            string id = reader[0].ToString();
+                            infoFromDataBase.QuestionsNationalCulture.Add("Вопрос " + id);
+                        }
                     }
                 }
             }
+            textQ.text = $"Загружено вопросов: {Questions.Count}";
         }
-
-        textQ.text = $"Загружено вопросов: {Questions.Count}";
-        Debug.Log($"Успешно загружено: {Questions.Count} вопросов");
-    }
-
-    void LoadQuestionsFromFile(string filePath)
-    {
-        // Загрузка из конкретного файла
-        string connectionString = "URI=file:" + filePath;
-        using (IDbConnection dbcon = new SqliteConnection(connectionString))
+        catch (System.Exception ex)
         {
-            dbcon.Open();
-
-            using (IDbCommand cmd = dbcon.CreateCommand())
-            {
-                cmd.CommandText = "SELECT * FROM Questions";
-                using (IDataReader reader = cmd.ExecuteReader())
-                {
-                    Questions.Clear();
-
-                    while (reader.Read())
-                    {
-                        string id = reader[0].ToString();
-                        Questions.Add("Вопрос " + id);
-                    }
-                }
-            }
+            Debug.LogError($"Ошибка: {ex.Message}");
+            textQ.text = "Ошибка загрузки базы";
         }
-
-        textQ.text = $"Загружено вопросов: {Questions.Count}";
-        Debug.Log($"Успешно загружено: {Questions.Count} вопросов");
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.E) && Questions != null && Questions.Count > 0)
+        if (Input.GetKeyDown(KeyCode.E) && Questions.Count > 0)
         {
             int r = Random.Range(0, Questions.Count);
             textQ.SetText(Questions[r]);

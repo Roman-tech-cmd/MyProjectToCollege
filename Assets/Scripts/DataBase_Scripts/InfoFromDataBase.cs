@@ -1,16 +1,25 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class InfoFromDataBase : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    [SerializeField] private List<string> questionsNationalCulture;
+    public List<string> QuestionsNationalCulture
     {
-        
+        get { return questionsNationalCulture; }
+        set { questionsNationalCulture = value; }
     }
 
-    // Update is called once per frame
-    void Update()
+    [SerializeField] private List<string> questionsMyCountry;
+    public List<string> QuestionsMyCountry
     {
-        
+        get { return questionsMyCountry; }
+        set { questionsMyCountry = value; }
     }
+
+    private void Update()
+    {
+        print(questionsNationalCulture.Count + " è " + questionsMyCountry.Count);
+    }
+
 }
