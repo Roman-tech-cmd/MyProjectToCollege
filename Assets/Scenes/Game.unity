@@ -6865,6 +6865,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1102448487}
   - component: {fileID: 1102448486}
+  - component: {fileID: 1102448489}
+  - component: {fileID: 1102448488}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -6905,6 +6907,33 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1102448488
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1102448485}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aba0ea13720f7b942bdb8a9ab66c7545, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TakerInfoFromBase
+  Questions: []
+  textQ: {fileID: 329329141}
+  dbPath: '"D:\UnityProject\MyProjectToCollege\Assets\StreamingAssets\QuestionDatabase.db"'
+--- !u!114 &1102448489
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1102448485}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c990c7e2ea76e0c419ea74b77060fd21, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InfoFromDataBase
 --- !u!1 &1116610922
 GameObject:
   m_ObjectHideFlags: 0
