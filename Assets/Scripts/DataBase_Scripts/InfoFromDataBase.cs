@@ -19,7 +19,7 @@ public class InfoFromDataBase : MonoBehaviour
 
     private void Update()
     {
-        print(questionsNationalCulture.Count + " è " + questionsMyCountry.Count);
+        //print(questionsNationalCulture.Count + " è " + questionsMyCountry.Count);
     }
 
 }

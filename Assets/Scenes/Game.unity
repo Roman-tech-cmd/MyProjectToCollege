@@ -7196,9 +7196,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aba0ea13720f7b942bdb8a9ab66c7545, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TakerInfoFromBase
-  Questions: []
-  textQ: {fileID: 1889753266}
-  infoFromDataBase: {fileID: 1102448489}
+  questionText: {fileID: 1889753266}
+  answerTexts:
+  - {fileID: 1936840473}
+  - {fileID: 2091349245}
+  - {fileID: 128132527}
+  - {fileID: 161896081}
 --- !u!114 &1102448489
 MonoBehaviour:
   m_ObjectHideFlags: 0
