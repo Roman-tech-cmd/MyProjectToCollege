@@ -3213,6 +3213,10 @@ PrefabInstance:
       propertyPath: imageQuestionHandler
       value: 
       objectReference: {fileID: -1572979054698715366, guid: d0d1b883d681bcd48889d0dd58f2cad6, type: 3}
+    - target: {fileID: 2065500542526118249, guid: 34136d1d6fe79c24899945399eba71b3, type: 3}
+      propertyPath: questionType
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 4477806362620421300, guid: 34136d1d6fe79c24899945399eba71b3, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -4044,6 +4048,10 @@ PrefabInstance:
       propertyPath: imageQuestionHandler
       value: 
       objectReference: {fileID: -1891770827317773330, guid: c71c2fa2c97510848a05d93b7159f5da, type: 3}
+    - target: {fileID: 2065500542526118249, guid: 34136d1d6fe79c24899945399eba71b3, type: 3}
+      propertyPath: questionType
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 4477806362620421300, guid: 34136d1d6fe79c24899945399eba71b3, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -6197,6 +6205,10 @@ PrefabInstance:
       propertyPath: imageQuestionHandler
       value: 
       objectReference: {fileID: -7471406406195136774, guid: 07e0078e88479cc419d9e5536bb13845, type: 3}
+    - target: {fileID: 1089525145714128458, guid: e97305fbd93494d41bed2fef81c3bdf9, type: 3}
+      propertyPath: questionType
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 1130357973855905582, guid: e97305fbd93494d41bed2fef81c3bdf9, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -6241,6 +6253,10 @@ PrefabInstance:
       propertyPath: m_fontSizeBase
       value: 30
       objectReference: {fileID: 0}
+    - target: {fileID: 1857530712082224819, guid: e97305fbd93494d41bed2fef81c3bdf9, type: 3}
+      propertyPath: questionType
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 2787103774820046631, guid: e97305fbd93494d41bed2fef81c3bdf9, type: 3}
       propertyPath: m_fontSize
       value: 30
@@ -6256,6 +6272,10 @@ PrefabInstance:
     - target: {fileID: 2846719121664134127, guid: e97305fbd93494d41bed2fef81c3bdf9, type: 3}
       propertyPath: m_fontSizeBase
       value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 3252067820139846387, guid: e97305fbd93494d41bed2fef81c3bdf9, type: 3}
+      propertyPath: questionType
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 3283328352646679447, guid: e97305fbd93494d41bed2fef81c3bdf9, type: 3}
       propertyPath: m_AnchorMax.y
@@ -6485,6 +6505,10 @@ PrefabInstance:
       propertyPath: m_fontSizeBase
       value: 30
       objectReference: {fileID: 0}
+    - target: {fileID: 7804590370018680615, guid: e97305fbd93494d41bed2fef81c3bdf9, type: 3}
+      propertyPath: questionType
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 7882181705882338287, guid: e97305fbd93494d41bed2fef81c3bdf9, type: 3}
       propertyPath: idQuestion
       value: 2
@@ -6660,6 +6684,10 @@ PrefabInstance:
     - target: {fileID: 8950973334916574887, guid: e97305fbd93494d41bed2fef81c3bdf9, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9140774504320710485, guid: e97305fbd93494d41bed2fef81c3bdf9, type: 3}
+      propertyPath: questionType
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
