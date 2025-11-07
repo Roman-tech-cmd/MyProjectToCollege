@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 public class TileQuestion : MonoBehaviour, IPointerClickHandler
 {
     [Header("=== ОСНОВНЫЕ ДАННЫЕ ===")]
-    private int idQuestion;
+    [SerializeField] private int idQuestion;
     public int IdQuestion => idQuestion;
 
     [SerializeField] private TileData questionData;
@@ -101,6 +101,8 @@ public class TileQuestion : MonoBehaviour, IPointerClickHandler
         answerOptions = questionData.answerOptions;
         hints = questionData.hints;
         hintsImage = questionData.hintImage;
+
+        
     }
 
     public void OnPointerClick(PointerEventData eventData)
