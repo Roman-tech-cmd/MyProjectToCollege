@@ -7,6 +7,10 @@ using System.Collections.Generic;
 
 public class TileData : MonoBehaviour
 {
+    [Header("Режим загрузки")]
+    [Tooltip("Если true - данные загружаются из БД, если false - вводятся вручную в инспекторе")]
+    public bool useDatabase = true;
+
     [Tooltip("Номер вопроса")]
     public int idQuestion;
 
@@ -37,23 +41,34 @@ public class TileData : MonoBehaviour
     private static Dictionary<int, List<int>> availableQuestionIdsByType = new Dictionary<int, List<int>>();
     private bool isDataLoaded = false;
 
+
+
     public void Start()
     {
         // Инициализируем словарь для типов вопросов
         if (availableQuestionIdsByType.Count == 0)
         {
-            availableQuestionIdsByType.Add(1, new List<int>()); // Группа 1
-            availableQuestionIdsByType.Add(2, new List<int>()); // Группа 2
+            availableQuestionIdsByType.Add(1, new List<int>());
+            availableQuestionIdsByType.Add(2, new List<int>());
         }
 
-        // Загружаем вопрос указанного типа при старте
-        LoadQuestionOfSpecifiedType();
+        // Только если используем БД - загружаем данные
+        if (useDatabase)
+        {
+            LoadQuestionOfSpecifiedType();
+        }
+        else
+        {
+            // В ручном режиме оставляем значения из инспектора как есть
+            isDataLoaded = true;
+            Debug.Log("Используется ручной ввод данных");
+        }
     }
 
     // Метод для загрузки вопроса указанного в инспекторе типа
     public void LoadQuestionOfSpecifiedType()
     {
-        if (!isDataLoaded)
+        if (!isDataLoaded && useDatabase)
         {
             StartCoroutine(LoadRandomQuestionByType(questionType));
         }
@@ -62,7 +77,7 @@ public class TileData : MonoBehaviour
     // Метод для загрузки случайного вопроса по типу
     public IEnumerator LoadRandomQuestionByType(int type)
     {
-        if (isDataLoaded) yield break;
+        if (isDataLoaded || !useDatabase) yield break;
 
         questionType = type;
         string dbPath = Path.Combine(Application.streamingAssetsPath, "QuestionDatabase.db");
@@ -110,7 +125,6 @@ public class TileData : MonoBehaviour
                 {
                     using (IDbCommand cmd = dbcon.CreateCommand())
                     {
-                        // Используем поле QuestionType в таблице Questions для фильтрации
                         cmd.CommandText = $"SELECT Id FROM Questions WHERE QuestionType = {type}";
                         using (IDataReader reader = cmd.ExecuteReader())
                         {
@@ -150,28 +164,33 @@ public class TileData : MonoBehaviour
 
     void LoadQuestionData(IDbConnection dbcon, int questionId, int type)
     {
-        // Загружаем текст вопроса и тип
+        // Загружаем текст вопроса, тип и подсказку
         using (IDbCommand cmd = dbcon.CreateCommand())
         {
-            cmd.CommandText = $"SELECT QuestionText, QuestionType FROM Questions WHERE Id = {questionId}";
+            cmd.CommandText = $"SELECT QuestionText, QuestionType, HintText FROM Questions WHERE Id = {questionId}";
             using (IDataReader reader = cmd.ExecuteReader())
             {
                 if (reader.Read())
                 {
                     question = reader.GetString(0);
-                    questionType = reader.GetInt32(1); // Загружаем тип из базы
+                    questionType = reader.GetInt32(1);
                     idQuestion = questionId;
+
+                    // Загружаем подсказку если есть
+                    if (!reader.IsDBNull(2))
+                    {
+                        hints = reader.GetString(2);
+                    }
                 }
             }
         }
 
-        // Загружаем ответы для этого вопроса из ОБЩЕЙ таблицы Answers
+        // Загружаем ответы для этого вопроса
         List<string> answers = new List<string>();
         string correctAnswerText = "";
 
         using (IDbCommand cmd = dbcon.CreateCommand())
         {
-            // Используем общую таблицу Answers для всех типов вопросов
             cmd.CommandText = $"SELECT AnswerText, IsCorrect FROM Answers WHERE QuestionId = {questionId}";
             using (IDataReader reader = cmd.ExecuteReader())
             {
@@ -202,96 +221,22 @@ public class TileData : MonoBehaviour
 
         Debug.Log($"Загружен вопрос типа {type}: {question}");
         Debug.Log($"Правильный ответ: {correctAnswer}");
+        Debug.Log($"Подсказка: {hints}");
         Debug.Log($"Всего ответов: {answerOptions.Length}");
     }
 
-    // Метод для принудительной перезагрузки нового случайного вопроса (того же типа)
+    // Метод для принудительной перезагрузки нового случайного вопроса
     public void ReloadRandomQuestion()
     {
+        if (!useDatabase)
+        {
+            Debug.LogWarning("Режим перезагрузки недоступен при ручном вводе данных");
+            return;
+        }
+
         isDataLoaded = false;
         StartCoroutine(LoadRandomQuestionByType(questionType));
     }
-
-    // Метод для смены типа вопроса и загрузки нового
-    public void ChangeQuestionTypeAndReload(int newType)
-    {
-        questionType = newType;
-        isDataLoaded = false;
-        StartCoroutine(LoadRandomQuestionByType(newType));
-    }
-
-    // Метод для проверки правильности ответа
-    public bool CheckAnswer(string selectedAnswer)
-    {
-        return selectedAnswer == correctAnswer;
-    }
-
-    // Метод для получения индекса правильного ответа
-    public int GetCorrectAnswerIndex()
-    {
-        for (int i = 0; i < answerOptions.Length; i++)
-        {
-            if (answerOptions[i] == correctAnswer)
-            {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    // Метод для проверки загружены ли данные
-    public bool IsDataLoaded()
-    {
-        return isDataLoaded;
-    }
-
-    // Метод для получения типа вопроса
-    public int GetQuestionType()
-    {
-        return questionType;
-    }
-
-    // Метод для установки типа вопроса (можно вызывать из инспектора)
-    public void SetQuestionType(int type)
-    {
-        if (type == 1 || type == 2)
-        {
-            questionType = type;
-        }
-        else
-        {
-            Debug.LogWarning("Тип вопроса должен быть 1 или 2");
-        }
-    }
-
-    // Метод для получения количества оставшихся вопросов по типу
-    public static int GetRemainingQuestionsCountByType(int type)
-    {
-        if (availableQuestionIdsByType.ContainsKey(type))
-        {
-            return availableQuestionIdsByType[type].Count;
-        }
-        return 0;
-    }
-
-    // Метод для получения общего количества оставшихся вопросов
-    public static int GetTotalRemainingQuestionsCount()
-    {
-        int total = 0;
-        foreach (var list in availableQuestionIdsByType.Values)
-        {
-            total += list.Count;
-        }
-        return total;
-    }
-
-    // Метод для сброса системы (при начале новой игры)
-    public static void ResetQuestionSystem()
-    {
-        foreach (var list in availableQuestionIdsByType.Values)
-        {
-            list.Clear();
-        }
-    }
 }
+
 

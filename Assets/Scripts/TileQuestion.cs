@@ -65,7 +65,9 @@ public class TileQuestion : MonoBehaviour, IPointerClickHandler
 
     // --- МЕТОДЫ ---
 
-    private void Start()
+
+
+    void OnEnable()
     {
         Inicialize();
         _numQuestion = GetComponentInChildren<TextMeshProUGUI>();
@@ -73,6 +75,7 @@ public class TileQuestion : MonoBehaviour, IPointerClickHandler
             _numQuestion.text = idQuestion.ToString();
         TransformationStringAnswerToIdButton();
     }
+    
 
     public void TransformationStringAnswerToIdButton()
     {
@@ -87,6 +90,9 @@ public class TileQuestion : MonoBehaviour, IPointerClickHandler
 
     public void Inicialize()
     {
+        questionData = GetComponent<TileData>();
+
+
         if (tileManager == null)
             tileManager = GameObject.FindGameObjectWithTag("TileManager").GetComponent<TileManager>();
 

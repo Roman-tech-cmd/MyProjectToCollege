@@ -8,276 +8,204 @@ using UnityEngine;
 
 public class TakerInfoFromBase : MonoBehaviour
 {
-    [Tooltip("Номер вопроса")]
-    public int idQuestion;
+    public TextMeshProUGUI questionText;
+    public TextMeshProUGUI[] answerTexts;
 
-    [Tooltip("Тип вопроса (1 или 2)")]
-    public int questionType;
+    private List<QuestionData> allQuestions = new List<QuestionData>();
+    private QuestionData currentQuestion;
 
-    [Tooltip("Изображение вопроса")]
-    public Sprite imageQuestion;
-
-    [Header("Основные данные")]
-    [Tooltip("Текст вопроса")]
-    [TextArea]
-    public string question;
-
-    [Header("Варианты ответов")]
-    [Tooltip("Массив с вариантами ответов (включая правильный)")]
-    public string[] answerOptions;
-
-    [Tooltip("Правильный ответ текст")]
-    public string correctAnswer;
-
-    [Header("Подсказки")]
-    [Tooltip("Массив с подсказками к вопросу")]
-    public string hints;
-    public Sprite hintImage;
-
-    private static Dictionary<int, List<int>> availableQuestionIdsByType = new Dictionary<int, List<int>>();
-    private bool isDataLoaded = false;
-
-    public void Start()
+    void Start()
     {
-        // Инициализируем словарь для типов вопросов
-        if (availableQuestionIdsByType.Count == 0)
-        {
-            availableQuestionIdsByType.Add(1, new List<int>()); // Группа 1
-            availableQuestionIdsByType.Add(2, new List<int>()); // Группа 2
-        }
-
-        // Автоматически загружаем случайный вопрос при старте
-        StartCoroutine(LoadRandomQuestion());
+        LoadAllQuestionsFromDatabase();
     }
 
-    // МЕТОД ДЛЯ ЗАГРУЗКИ СЛУЧАЙНОГО ВОПРОСА (АВТОМАТИЧЕСКИ ВЫБИРАЕТ ТИП)
-    public IEnumerator LoadRandomQuestion()
+    public void LoadAllQuestionsFromDatabase()
     {
-        if (isDataLoaded) yield break;
-
-        // Случайно выбираем тип вопроса (1 или 2)
-        int randomType = Random.Range(1, 3);
-        yield return StartCoroutine(LoadRandomQuestionByType(randomType));
+        StartCoroutine(LoadQuestionsCoroutine());
     }
 
-    // Метод для загрузки случайного вопроса по типу
-    public IEnumerator LoadRandomQuestionByType(int type)
+    IEnumerator LoadQuestionsCoroutine()
     {
-        if (isDataLoaded) yield break;
-
-        questionType = type;
         string dbPath = Path.Combine(Application.streamingAssetsPath, "QuestionDatabase.db");
 
 #if UNITY_ANDROID || UNITY_WEBGL
-        // Для мобильных платформ
-        yield return StartCoroutine(LoadRandomQuestionMobile(dbPath, type));
-#else
-        // Для Windows/Mac
-        if (File.Exists(dbPath))
-        {
-            LoadRandomQuestionFromDatabase(dbPath, type);
-        }
-        yield return null;
-#endif
-    }
-
-    IEnumerator LoadRandomQuestionMobile(string dbPath, int type)
-    {
         using (var www = UnityEngine.Networking.UnityWebRequest.Get(dbPath))
         {
             yield return www.SendWebRequest();
-
             if (www.result == UnityEngine.Networking.UnityWebRequest.Result.Success)
             {
-                string tempPath = Path.Combine(Application.persistentDataPath, "temp_question.db");
+                string tempPath = Path.Combine(Application.persistentDataPath, "temp.db");
                 File.WriteAllBytes(tempPath, www.downloadHandler.data);
-                LoadRandomQuestionFromDatabase(tempPath, type);
+                ParseQuestionsFromDatabase(tempPath);
                 File.Delete(tempPath);
             }
         }
+#else
+        if (File.Exists(dbPath))
+        {
+            ParseQuestionsFromDatabase(dbPath);
+        }
+#endif
+
+        yield return null;
     }
 
-    void LoadRandomQuestionFromDatabase(string dbPath, int type)
+    void ParseQuestionsFromDatabase(string dbPath)
     {
         try
         {
+            allQuestions.Clear();
+
             string connectionString = "URI=file:" + dbPath;
             using (IDbConnection dbcon = new SqliteConnection(connectionString))
             {
                 dbcon.Open();
 
-                // Получаем список всех ID вопросов для указанного типа
-                if (availableQuestionIdsByType[type].Count == 0)
+                Dictionary<int, QuestionData> questionsDict = new Dictionary<int, QuestionData>();
+
+                // Загружаем все вопросы
+                using (IDbCommand cmd = dbcon.CreateCommand())
                 {
-                    using (IDbCommand cmd = dbcon.CreateCommand())
+                    cmd.CommandText = "SELECT ID, QuestionText FROM Questions";
+                    using (IDataReader reader = cmd.ExecuteReader())
                     {
-                        // Используем поле QuestionType в таблице Questions для фильтрации
-                        cmd.CommandText = $"SELECT Id FROM Questions WHERE QuestionType = {type}";
-                        using (IDataReader reader = cmd.ExecuteReader())
+                        while (reader.Read())
                         {
-                            while (reader.Read())
+                            int questionId = reader.GetInt32(0);
+                            string questionText = reader.GetString(1);
+
+                            questionsDict[questionId] = new QuestionData
                             {
-                                availableQuestionIdsByType[type].Add(reader.GetInt32(0));
+                                Id = questionId,
+                                QuestionText = questionText
+                            };
+                        }
+                    }
+                }
+
+                // Загружаем все ответы
+                using (IDbCommand cmd = dbcon.CreateCommand())
+                {
+                    cmd.CommandText = "SELECT QuestionId, AnswerText, IsCorrect FROM Answers ORDER BY QuestionId";
+                    using (IDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            int questionId = reader.GetInt32(0);
+                            string answerText = reader.GetString(1);
+                            bool isCorrect = reader.GetBoolean(2);
+
+                            if (questionsDict.ContainsKey(questionId))
+                            {
+                                questionsDict[questionId].Answers.Add(new AnswerData
+                                {
+                                    AnswerText = answerText,
+                                    IsCorrect = isCorrect
+                                });
                             }
                         }
                     }
-
-                    Debug.Log($"Загружено вопросов типа {type}: {availableQuestionIdsByType[type].Count}");
                 }
 
-                if (availableQuestionIdsByType[type].Count == 0)
+                // Проверяем что у каждого вопроса ровно 4 ответа (1 правильный, 3 неправильных)
+                foreach (var question in questionsDict.Values)
                 {
-                    Debug.LogError($"Нет вопросов типа {type} в базе данных!");
-                    return;
+                    int correctCount = 0;
+                    int wrongCount = 0;
+
+                    foreach (var answer in question.Answers)
+                    {
+                        if (answer.IsCorrect) correctCount++;
+                        else wrongCount++;
+                    }
+
+                    // Добавляем только вопросы с правильной структурой
+                    if (correctCount == 1 && wrongCount == 3 && question.Answers.Count == 4)
+                    {
+                        allQuestions.Add(question);
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"Вопрос {question.Id} имеет неправильную структуру ответов. Правильных: {correctCount}, Неправильных: {wrongCount}");
+                    }
                 }
 
-                // Выбираем случайный ID вопроса из нужного типа
-                int randomIndex = Random.Range(0, availableQuestionIdsByType[type].Count);
-                int randomQuestionId = availableQuestionIdsByType[type][randomIndex];
-                availableQuestionIdsByType[type].RemoveAt(randomIndex);
-
-                // Загружаем данные выбранного вопроса
-                LoadQuestionData(dbcon, randomQuestionId, type);
-
-                isDataLoaded = true;
-                Debug.Log($"Загружен вопрос ID: {randomQuestionId}, Тип: {type}");
+                Debug.Log($"Загружено вопросов с 4 ответами (1 верный, 3 неверных): {allQuestions.Count}");
             }
         }
         catch (System.Exception ex)
         {
-            Debug.LogError($"Ошибка загрузки вопроса типа {type}: {ex.Message}");
+            Debug.LogError($"Ошибка загрузки базы: {ex.Message}");
         }
     }
 
-    void LoadQuestionData(IDbConnection dbcon, int questionId, int type)
+    // Метод для получения случайного вопроса
+    public QuestionData GetRandomQuestion()
     {
-        // Загружаем текст вопроса и тип
-        using (IDbCommand cmd = dbcon.CreateCommand())
+        if (allQuestions.Count == 0)
         {
-            cmd.CommandText = $"SELECT QuestionText, QuestionType FROM Questions WHERE Id = {questionId}";
-            using (IDataReader reader = cmd.ExecuteReader())
+            Debug.LogWarning("Нет загруженных вопросов");
+            return null;
+        }
+
+        int randomIndex = Random.Range(0, allQuestions.Count);
+        return allQuestions[randomIndex];
+    }
+
+    // Метод для показа случайного вопроса
+    public void ShowRandomQuestion()
+    {
+        currentQuestion = GetRandomQuestion();
+
+        if (currentQuestion != null)
+        {
+            DisplayQuestion(currentQuestion);
+        }
+    }
+
+    // Метод для отображения вопроса и 4 ответов
+    public void DisplayQuestion(QuestionData question)
+    {
+        // Показываем текст вопроса
+        questionText.text = question.QuestionText;
+
+        // Перемешиваем ответы
+        List<AnswerData> shuffledAnswers = ShuffleAnswers(new List<AnswerData>(question.Answers));
+
+        // Показываем ровно 4 ответа
+        for (int i = 0; i < answerTexts.Length; i++)
+        {
+            if (i < shuffledAnswers.Count)
             {
-                if (reader.Read())
-                {
-                    question = reader.GetString(0);
-                    questionType = reader.GetInt32(1); // Загружаем тип из базы
-                    idQuestion = questionId;
-                }
+                answerTexts[i].text = shuffledAnswers[i].AnswerText;
+                answerTexts[i].transform.parent.gameObject.SetActive(true);
+            }
+            else
+            {
+                answerTexts[i].transform.parent.gameObject.SetActive(false);
             }
         }
+    }
 
-        // Загружаем ответы для этого вопроса из ОБЩЕЙ таблицы Answers
-        List<string> answers = new List<string>();
-        string correctAnswerText = "";
-
-        using (IDbCommand cmd = dbcon.CreateCommand())
+    // Перемешивание ответов
+    List<AnswerData> ShuffleAnswers(List<AnswerData> answers)
+    {
+        for (int i = 0; i < answers.Count; i++)
         {
-            // Используем общую таблицу Answers для всех типов вопросов
-            cmd.CommandText = $"SELECT AnswerText, IsCorrect FROM Answers WHERE QuestionId = {questionId}";
-            using (IDataReader reader = cmd.ExecuteReader())
-            {
-                while (reader.Read())
-                {
-                    string answerText = reader.GetString(0);
-                    bool isCorrect = reader.GetBoolean(1);
-
-                    answers.Add(answerText);
-
-                    if (isCorrect)
-                    {
-                        correctAnswer = answerText;
-                        correctAnswerText = answerText;
-                    }
-                }
-            }
+            AnswerData temp = answers[i];
+            int randomIndex = Random.Range(i, answers.Count);
+            answers[i] = answers[randomIndex];
+            answers[randomIndex] = temp;
         }
+        return answers;
+    }
 
-        // Проверяем что загружено 4 ответа
-        if (answers.Count != 4)
+    private void Update()
+    {
+        // Показ случайного вопроса по нажатию Space
+        if (Input.GetKeyDown(KeyCode.Space))
         {
-            Debug.LogWarning($"Вопрос {questionId} имеет {answers.Count} ответов вместо 4!");
-        }
-
-        // Записываем ответы в массив
-        answerOptions = answers.ToArray();
-
-        Debug.Log($"Загружен вопрос типа {type}: {question}");
-        Debug.Log($"Правильный ответ: {correctAnswer}");
-        Debug.Log($"Всего ответов: {answerOptions.Length}");
-    }
-
-    // Метод для принудительной перезагрузки нового случайного вопроса определенного типа
-    public void ReloadRandomQuestionByType(int type)
-    {
-        isDataLoaded = false;
-        StartCoroutine(LoadRandomQuestionByType(type));
-    }
-
-    // Метод для принудительной перезагрузки нового случайного вопроса
-    public void ReloadRandomQuestion()
-    {
-        isDataLoaded = false;
-        StartCoroutine(LoadRandomQuestion());
-    }
-
-    // Метод для проверки правильности ответа
-    public bool CheckAnswer(string selectedAnswer)
-    {
-        return selectedAnswer == correctAnswer;
-    }
-
-    // Метод для получения индекса правильного ответа
-    public int GetCorrectAnswerIndex()
-    {
-        for (int i = 0; i < answerOptions.Length; i++)
-        {
-            if (answerOptions[i] == correctAnswer)
-            {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    // Метод для проверки загружены ли данные
-    public bool IsDataLoaded()
-    {
-        return isDataLoaded;
-    }
-
-    // Метод для получения типа вопроса
-    public int GetQuestionType()
-    {
-        return questionType;
-    }
-
-    // Метод для получения количества оставшихся вопросов по типу
-    public static int GetRemainingQuestionsCountByType(int type)
-    {
-        if (availableQuestionIdsByType.ContainsKey(type))
-        {
-            return availableQuestionIdsByType[type].Count;
-        }
-        return 0;
-    }
-
-    // Метод для получения общего количества оставшихся вопросов
-    public static int GetTotalRemainingQuestionsCount()
-    {
-        int total = 0;
-        foreach (var list in availableQuestionIdsByType.Values)
-        {
-            total += list.Count;
-        }
-        return total;
-    }
-
-    // Метод для сброса системы (при начале новой игры)
-    public static void ResetQuestionSystem()
-    {
-        foreach (var list in availableQuestionIdsByType.Values)
-        {
-            list.Clear();
+            ShowRandomQuestion();
         }
     }
 }

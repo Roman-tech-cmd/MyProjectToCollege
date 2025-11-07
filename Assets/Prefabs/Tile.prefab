@@ -227,7 +227,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TileQuestion
   idQuestion: 0
-  questionData: {fileID: 2065500542526118249}
+  questionData: {fileID: 0}
   takeImageFromData: 0
   imageQuestionHandler: {fileID: 0}
   tileManager: {fileID: 0}
@@ -248,6 +248,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7df54a0aab75354c9da7a1a4c1f8eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TileData
+  useDatabase: 1
   idQuestion: 0
   questionType: 0
   imageQuestion: {fileID: 0}

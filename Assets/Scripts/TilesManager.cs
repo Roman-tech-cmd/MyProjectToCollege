@@ -272,6 +272,7 @@ public class TileManager : MonoBehaviour
 
         if (selectedTiles != null && textQuestion != null)
         {
+            print("КУ");
             textQuestion.text = selectedTiles.Question;
         }
 
