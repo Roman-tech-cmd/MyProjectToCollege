@@ -66,13 +66,15 @@ public class TileQuestion : MonoBehaviour, IPointerClickHandler
     // --- МЕТОДЫ ---
 
 
-
-    void OnEnable()
+    private void Start()
     {
-        Inicialize();
         _numQuestion = GetComponentInChildren<TextMeshProUGUI>();
         if (_numQuestion != null)
             _numQuestion.text = idQuestion.ToString();
+    }
+    void OnEnable()
+    {
+        Inicialize();
         TransformationStringAnswerToIdButton();
     }
     
