@@ -25,6 +25,6 @@ public class CounterAnswer : MonoBehaviour
     public void IncCorrectAnswer()
     {
         countCorrectAnswer++;
-        textIncorrectAnswer.SetText($" оличество вопросов, отвеченных правильно с первого раза: {countCorrectAnswer.ToString()} из 27");
+        textIncorrectAnswer.SetText($" оличество правильных ответов: {countCorrectAnswer.ToString()} из 27");
     }
 }
