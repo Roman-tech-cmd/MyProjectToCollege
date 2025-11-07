@@ -1,36 +1,36 @@
-п»їusing Mono.Data.Sqlite;
+using UnityEngine;
 using System.Collections;
-using System.Collections.Generic;
+using Mono.Data.Sqlite;
 using System.Data;
 using System.IO;
-using TMPro;
-using UnityEngine;
+using System.Collections.Generic;
 
-public class TakerInfoFromBase : MonoBehaviour
+public class TileData : MonoBehaviour
 {
-    [Tooltip("РќРѕРјРµСЂ РІРѕРїСЂРѕСЃР°")]
+    [Tooltip("Номер вопроса")]
     public int idQuestion;
 
-    [Tooltip("РўРёРї РІРѕРїСЂРѕСЃР° (1 РёР»Рё 2)")]
-    public int questionType;
+    [Header("Настройки типа вопроса")]
+    [Tooltip("Тип вопроса (1 или 2) - задается в инспекторе")]
+    public int questionType = 1;
 
-    [Tooltip("РР·РѕР±СЂР°Р¶РµРЅРёРµ РІРѕРїСЂРѕСЃР°")]
+    [Tooltip("Изображение вопроса")]
     public Sprite imageQuestion;
 
-    [Header("РћСЃРЅРѕРІРЅС‹Рµ РґР°РЅРЅС‹Рµ")]
-    [Tooltip("РўРµРєСЃС‚ РІРѕРїСЂРѕСЃР°")]
+    [Header("Основные данные")]
+    [Tooltip("Текст вопроса")]
     [TextArea]
     public string question;
 
-    [Header("Р’Р°СЂРёР°РЅС‚С‹ РѕС‚РІРµС‚РѕРІ")]
-    [Tooltip("РњР°СЃСЃРёРІ СЃ РІР°СЂРёР°РЅС‚Р°РјРё РѕС‚РІРµС‚РѕРІ (РІРєР»СЋС‡Р°СЏ РїСЂР°РІРёР»СЊРЅС‹Р№)")]
+    [Header("Варианты ответов")]
+    [Tooltip("Массив с вариантами ответов (включая правильный)")]
     public string[] answerOptions;
 
-    [Tooltip("РџСЂР°РІРёР»СЊРЅС‹Р№ РѕС‚РІРµС‚ С‚РµРєСЃС‚")]
+    [Tooltip("Правильный ответ текст")]
     public string correctAnswer;
 
-    [Header("РџРѕРґСЃРєР°Р·РєРё")]
-    [Tooltip("РњР°СЃСЃРёРІ СЃ РїРѕРґСЃРєР°Р·РєР°РјРё Рє РІРѕРїСЂРѕСЃСѓ")]
+    [Header("Подсказки")]
+    [Tooltip("Массив с подсказками к вопросу")]
     public string hints;
     public Sprite hintImage;
 
@@ -39,28 +39,27 @@ public class TakerInfoFromBase : MonoBehaviour
 
     public void Start()
     {
-        // РРЅРёС†РёР°Р»РёР·РёСЂСѓРµРј СЃР»РѕРІР°СЂСЊ РґР»СЏ С‚РёРїРѕРІ РІРѕРїСЂРѕСЃРѕРІ
+        // Инициализируем словарь для типов вопросов
         if (availableQuestionIdsByType.Count == 0)
         {
-            availableQuestionIdsByType.Add(1, new List<int>()); // Р“СЂСѓРїРїР° 1
-            availableQuestionIdsByType.Add(2, new List<int>()); // Р“СЂСѓРїРїР° 2
+            availableQuestionIdsByType.Add(1, new List<int>()); // Группа 1
+            availableQuestionIdsByType.Add(2, new List<int>()); // Группа 2
         }
 
-        // РђРІС‚РѕРјР°С‚РёС‡РµСЃРєРё Р·Р°РіСЂСѓР¶Р°РµРј СЃР»СѓС‡Р°Р№РЅС‹Р№ РІРѕРїСЂРѕСЃ РїСЂРё СЃС‚Р°СЂС‚Рµ
-        StartCoroutine(LoadRandomQuestion());
+        // Загружаем вопрос указанного типа при старте
+        LoadQuestionOfSpecifiedType();
     }
 
-    // РњР•РўРћР” Р”Р›РЇ Р—РђР“Р РЈР—РљР РЎР›РЈР§РђР™РќРћР“Рћ Р’РћРџР РћРЎРђ (РђР’РўРћРњРђРўРР§Р•РЎРљР Р’Р«Р‘РР РђР•Рў РўРРџ)
-    public IEnumerator LoadRandomQuestion()
+    // Метод для загрузки вопроса указанного в инспекторе типа
+    public void LoadQuestionOfSpecifiedType()
     {
-        if (isDataLoaded) yield break;
-
-        // РЎР»СѓС‡Р°Р№РЅРѕ РІС‹Р±РёСЂР°РµРј С‚РёРї РІРѕРїСЂРѕСЃР° (1 РёР»Рё 2)
-        int randomType = Random.Range(1, 3);
-        yield return StartCoroutine(LoadRandomQuestionByType(randomType));
+        if (!isDataLoaded)
+        {
+            StartCoroutine(LoadRandomQuestionByType(questionType));
+        }
     }
 
-    // РњРµС‚РѕРґ РґР»СЏ Р·Р°РіСЂСѓР·РєРё СЃР»СѓС‡Р°Р№РЅРѕРіРѕ РІРѕРїСЂРѕСЃР° РїРѕ С‚РёРїСѓ
+    // Метод для загрузки случайного вопроса по типу
     public IEnumerator LoadRandomQuestionByType(int type)
     {
         if (isDataLoaded) yield break;
@@ -69,10 +68,10 @@ public class TakerInfoFromBase : MonoBehaviour
         string dbPath = Path.Combine(Application.streamingAssetsPath, "QuestionDatabase.db");
 
 #if UNITY_ANDROID || UNITY_WEBGL
-        // Р”Р»СЏ РјРѕР±РёР»СЊРЅС‹С… РїР»Р°С‚С„РѕСЂРј
+        // Для мобильных платформ
         yield return StartCoroutine(LoadRandomQuestionMobile(dbPath, type));
 #else
-        // Р”Р»СЏ Windows/Mac
+        // Для Windows/Mac
         if (File.Exists(dbPath))
         {
             LoadRandomQuestionFromDatabase(dbPath, type);
@@ -106,12 +105,12 @@ public class TakerInfoFromBase : MonoBehaviour
             {
                 dbcon.Open();
 
-                // РџРѕР»СѓС‡Р°РµРј СЃРїРёСЃРѕРє РІСЃРµС… ID РІРѕРїСЂРѕСЃРѕРІ РґР»СЏ СѓРєР°Р·Р°РЅРЅРѕРіРѕ С‚РёРїР°
+                // Получаем список всех ID вопросов для указанного типа
                 if (availableQuestionIdsByType[type].Count == 0)
                 {
                     using (IDbCommand cmd = dbcon.CreateCommand())
                     {
-                        // РСЃРїРѕР»СЊР·СѓРµРј РїРѕР»Рµ QuestionType РІ С‚Р°Р±Р»РёС†Рµ Questions РґР»СЏ С„РёР»СЊС‚СЂР°С†РёРё
+                        // Используем поле QuestionType в таблице Questions для фильтрации
                         cmd.CommandText = $"SELECT Id FROM Questions WHERE QuestionType = {type}";
                         using (IDataReader reader = cmd.ExecuteReader())
                         {
@@ -122,36 +121,36 @@ public class TakerInfoFromBase : MonoBehaviour
                         }
                     }
 
-                    Debug.Log($"Р—Р°РіСЂСѓР¶РµРЅРѕ РІРѕРїСЂРѕСЃРѕРІ С‚РёРїР° {type}: {availableQuestionIdsByType[type].Count}");
+                    Debug.Log($"Загружено вопросов типа {type}: {availableQuestionIdsByType[type].Count}");
                 }
 
                 if (availableQuestionIdsByType[type].Count == 0)
                 {
-                    Debug.LogError($"РќРµС‚ РІРѕРїСЂРѕСЃРѕРІ С‚РёРїР° {type} РІ Р±Р°Р·Рµ РґР°РЅРЅС‹С…!");
+                    Debug.LogError($"Нет вопросов типа {type} в базе данных!");
                     return;
                 }
 
-                // Р’С‹Р±РёСЂР°РµРј СЃР»СѓС‡Р°Р№РЅС‹Р№ ID РІРѕРїСЂРѕСЃР° РёР· РЅСѓР¶РЅРѕРіРѕ С‚РёРїР°
+                // Выбираем случайный ID вопроса из нужного типа
                 int randomIndex = Random.Range(0, availableQuestionIdsByType[type].Count);
                 int randomQuestionId = availableQuestionIdsByType[type][randomIndex];
                 availableQuestionIdsByType[type].RemoveAt(randomIndex);
 
-                // Р—Р°РіСЂСѓР¶Р°РµРј РґР°РЅРЅС‹Рµ РІС‹Р±СЂР°РЅРЅРѕРіРѕ РІРѕРїСЂРѕСЃР°
+                // Загружаем данные выбранного вопроса
                 LoadQuestionData(dbcon, randomQuestionId, type);
 
                 isDataLoaded = true;
-                Debug.Log($"Р—Р°РіСЂСѓР¶РµРЅ РІРѕРїСЂРѕСЃ ID: {randomQuestionId}, РўРёРї: {type}");
+                Debug.Log($"Загружен вопрос ID: {randomQuestionId}, Тип: {type}");
             }
         }
         catch (System.Exception ex)
         {
-            Debug.LogError($"РћС€РёР±РєР° Р·Р°РіСЂСѓР·РєРё РІРѕРїСЂРѕСЃР° С‚РёРїР° {type}: {ex.Message}");
+            Debug.LogError($"Ошибка загрузки вопроса типа {type}: {ex.Message}");
         }
     }
 
     void LoadQuestionData(IDbConnection dbcon, int questionId, int type)
     {
-        // Р—Р°РіСЂСѓР¶Р°РµРј С‚РµРєСЃС‚ РІРѕРїСЂРѕСЃР° Рё С‚РёРї
+        // Загружаем текст вопроса и тип
         using (IDbCommand cmd = dbcon.CreateCommand())
         {
             cmd.CommandText = $"SELECT QuestionText, QuestionType FROM Questions WHERE Id = {questionId}";
@@ -160,19 +159,19 @@ public class TakerInfoFromBase : MonoBehaviour
                 if (reader.Read())
                 {
                     question = reader.GetString(0);
-                    questionType = reader.GetInt32(1); // Р—Р°РіСЂСѓР¶Р°РµРј С‚РёРї РёР· Р±Р°Р·С‹
+                    questionType = reader.GetInt32(1); // Загружаем тип из базы
                     idQuestion = questionId;
                 }
             }
         }
 
-        // Р—Р°РіСЂСѓР¶Р°РµРј РѕС‚РІРµС‚С‹ РґР»СЏ СЌС‚РѕРіРѕ РІРѕРїСЂРѕСЃР° РёР· РћР‘Р©Р•Р™ С‚Р°Р±Р»РёС†С‹ Answers
+        // Загружаем ответы для этого вопроса из ОБЩЕЙ таблицы Answers
         List<string> answers = new List<string>();
         string correctAnswerText = "";
 
         using (IDbCommand cmd = dbcon.CreateCommand())
         {
-            // РСЃРїРѕР»СЊР·СѓРµРј РѕР±С‰СѓСЋ С‚Р°Р±Р»РёС†Сѓ Answers РґР»СЏ РІСЃРµС… С‚РёРїРѕРІ РІРѕРїСЂРѕСЃРѕРІ
+            // Используем общую таблицу Answers для всех типов вопросов
             cmd.CommandText = $"SELECT AnswerText, IsCorrect FROM Answers WHERE QuestionId = {questionId}";
             using (IDataReader reader = cmd.ExecuteReader())
             {
@@ -192,41 +191,42 @@ public class TakerInfoFromBase : MonoBehaviour
             }
         }
 
-        // РџСЂРѕРІРµСЂСЏРµРј С‡С‚Рѕ Р·Р°РіСЂСѓР¶РµРЅРѕ 4 РѕС‚РІРµС‚Р°
+        // Проверяем что загружено 4 ответа
         if (answers.Count != 4)
         {
-            Debug.LogWarning($"Р’РѕРїСЂРѕСЃ {questionId} РёРјРµРµС‚ {answers.Count} РѕС‚РІРµС‚РѕРІ РІРјРµСЃС‚Рѕ 4!");
+            Debug.LogWarning($"Вопрос {questionId} имеет {answers.Count} ответов вместо 4!");
         }
 
-        // Р—Р°РїРёСЃС‹РІР°РµРј РѕС‚РІРµС‚С‹ РІ РјР°СЃСЃРёРІ
+        // Записываем ответы в массив
         answerOptions = answers.ToArray();
 
-        Debug.Log($"Р—Р°РіСЂСѓР¶РµРЅ РІРѕРїСЂРѕСЃ С‚РёРїР° {type}: {question}");
-        Debug.Log($"РџСЂР°РІРёР»СЊРЅС‹Р№ РѕС‚РІРµС‚: {correctAnswer}");
-        Debug.Log($"Р’СЃРµРіРѕ РѕС‚РІРµС‚РѕРІ: {answerOptions.Length}");
+        Debug.Log($"Загружен вопрос типа {type}: {question}");
+        Debug.Log($"Правильный ответ: {correctAnswer}");
+        Debug.Log($"Всего ответов: {answerOptions.Length}");
     }
 
-    // РњРµС‚РѕРґ РґР»СЏ РїСЂРёРЅСѓРґРёС‚РµР»СЊРЅРѕР№ РїРµСЂРµР·Р°РіСЂСѓР·РєРё РЅРѕРІРѕРіРѕ СЃР»СѓС‡Р°Р№РЅРѕРіРѕ РІРѕРїСЂРѕСЃР° РѕРїСЂРµРґРµР»РµРЅРЅРѕРіРѕ С‚РёРїР°
-    public void ReloadRandomQuestionByType(int type)
-    {
-        isDataLoaded = false;
-        StartCoroutine(LoadRandomQuestionByType(type));
-    }
-
-    // РњРµС‚РѕРґ РґР»СЏ РїСЂРёРЅСѓРґРёС‚РµР»СЊРЅРѕР№ РїРµСЂРµР·Р°РіСЂСѓР·РєРё РЅРѕРІРѕРіРѕ СЃР»СѓС‡Р°Р№РЅРѕРіРѕ РІРѕРїСЂРѕСЃР°
+    // Метод для принудительной перезагрузки нового случайного вопроса (того же типа)
     public void ReloadRandomQuestion()
     {
         isDataLoaded = false;
-        StartCoroutine(LoadRandomQuestion());
+        StartCoroutine(LoadRandomQuestionByType(questionType));
     }
 
-    // РњРµС‚РѕРґ РґР»СЏ РїСЂРѕРІРµСЂРєРё РїСЂР°РІРёР»СЊРЅРѕСЃС‚Рё РѕС‚РІРµС‚Р°
+    // Метод для смены типа вопроса и загрузки нового
+    public void ChangeQuestionTypeAndReload(int newType)
+    {
+        questionType = newType;
+        isDataLoaded = false;
+        StartCoroutine(LoadRandomQuestionByType(newType));
+    }
+
+    // Метод для проверки правильности ответа
     public bool CheckAnswer(string selectedAnswer)
     {
         return selectedAnswer == correctAnswer;
     }
 
-    // РњРµС‚РѕРґ РґР»СЏ РїРѕР»СѓС‡РµРЅРёСЏ РёРЅРґРµРєСЃР° РїСЂР°РІРёР»СЊРЅРѕРіРѕ РѕС‚РІРµС‚Р°
+    // Метод для получения индекса правильного ответа
     public int GetCorrectAnswerIndex()
     {
         for (int i = 0; i < answerOptions.Length; i++)
@@ -239,19 +239,32 @@ public class TakerInfoFromBase : MonoBehaviour
         return -1;
     }
 
-    // РњРµС‚РѕРґ РґР»СЏ РїСЂРѕРІРµСЂРєРё Р·Р°РіСЂСѓР¶РµРЅС‹ Р»Рё РґР°РЅРЅС‹Рµ
+    // Метод для проверки загружены ли данные
     public bool IsDataLoaded()
     {
         return isDataLoaded;
     }
 
-    // РњРµС‚РѕРґ РґР»СЏ РїРѕР»СѓС‡РµРЅРёСЏ С‚РёРїР° РІРѕРїСЂРѕСЃР°
+    // Метод для получения типа вопроса
     public int GetQuestionType()
     {
         return questionType;
     }
 
-    // РњРµС‚РѕРґ РґР»СЏ РїРѕР»СѓС‡РµРЅРёСЏ РєРѕР»РёС‡РµСЃС‚РІР° РѕСЃС‚Р°РІС€РёС…СЃСЏ РІРѕРїСЂРѕСЃРѕРІ РїРѕ С‚РёРїСѓ
+    // Метод для установки типа вопроса (можно вызывать из инспектора)
+    public void SetQuestionType(int type)
+    {
+        if (type == 1 || type == 2)
+        {
+            questionType = type;
+        }
+        else
+        {
+            Debug.LogWarning("Тип вопроса должен быть 1 или 2");
+        }
+    }
+
+    // Метод для получения количества оставшихся вопросов по типу
     public static int GetRemainingQuestionsCountByType(int type)
     {
         if (availableQuestionIdsByType.ContainsKey(type))
@@ -261,7 +274,7 @@ public class TakerInfoFromBase : MonoBehaviour
         return 0;
     }
 
-    // РњРµС‚РѕРґ РґР»СЏ РїРѕР»СѓС‡РµРЅРёСЏ РѕР±С‰РµРіРѕ РєРѕР»РёС‡РµСЃС‚РІР° РѕСЃС‚Р°РІС€РёС…СЃСЏ РІРѕРїСЂРѕСЃРѕРІ
+    // Метод для получения общего количества оставшихся вопросов
     public static int GetTotalRemainingQuestionsCount()
     {
         int total = 0;
@@ -272,7 +285,7 @@ public class TakerInfoFromBase : MonoBehaviour
         return total;
     }
 
-    // РњРµС‚РѕРґ РґР»СЏ СЃР±СЂРѕСЃР° СЃРёСЃС‚РµРјС‹ (РїСЂРё РЅР°С‡Р°Р»Рµ РЅРѕРІРѕР№ РёРіСЂС‹)
+    // Метод для сброса системы (при начале новой игры)
     public static void ResetQuestionSystem()
     {
         foreach (var list in availableQuestionIdsByType.Values)
@@ -281,3 +294,4 @@ public class TakerInfoFromBase : MonoBehaviour
         }
     }
 }
+
