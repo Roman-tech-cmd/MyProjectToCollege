@@ -20,7 +20,7 @@ public class TileQuestion : MonoBehaviour, IPointerClickHandler
     [SerializeField] private Sprite imageQuestionHandler;
 
     [Space(10)]
-    [SerializeField] private TileManager tileManager;
+    private TileManager tileManager;
 
     [Header("=== СОСТОЯНИЕ ===")]
     private int wrongAttempts;
@@ -37,8 +37,8 @@ public class TileQuestion : MonoBehaviour, IPointerClickHandler
         set { tempWrongAttempts = value; }
     }
 
-    public bool IsSelected;
-    public bool IsSolved;
+    [HideInInspector] public bool IsSelected;
+    [HideInInspector] public bool IsSolved;
 
     [Header("=== ВИЗУАЛЬНЫЕ ЭЛЕМЕНТЫ ===")]
     private TextMeshProUGUI _numQuestion;
@@ -51,7 +51,7 @@ public class TileQuestion : MonoBehaviour, IPointerClickHandler
     private Sprite imageQuestion;
     public Sprite ImageQuestion => imageQuestion;
 
-    public int correctButtonId;
+    private int correctButtonId;
     public int CorrectButtonId => correctButtonId;
 
     private string[] answerOptions;
@@ -90,7 +90,7 @@ public class TileQuestion : MonoBehaviour, IPointerClickHandler
 
     public void Inicialize()
     {
-        questionData = GetComponent<TileData>();
+        //questionData = GetComponent<TileData>();
 
 
         if (tileManager == null)

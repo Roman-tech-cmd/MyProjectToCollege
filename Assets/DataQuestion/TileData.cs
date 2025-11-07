@@ -7,12 +7,15 @@ using System.Collections.Generic;
 
 public class TileData : MonoBehaviour
 {
-    [Header("Режим загрузки")]
-    [Tooltip("Если true - данные загружаются из БД, если false - вводятся вручную в инспекторе")]
-    public bool useDatabase = true;
 
     [Tooltip("Номер вопроса")]
     public int idQuestion;
+
+    [Space(10)]
+    [Header("Режим загрузки")]
+    [Tooltip("Если true - данные загружаются из БД, если false - вводятся вручную в инспекторе")]
+    public bool useDatabase = true;
+    [Space(10)]
 
     [Header("Настройки типа вопроса")]
     [Tooltip("Тип вопроса (1 или 2) - задается в инспекторе")]
