@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 public class TileQuestion : MonoBehaviour, IPointerClickHandler
 {
     [Header("=== ОСНОВНЫЕ ДАННЫЕ ===")]
-    [SerializeField] private int idQuestion;
+    private int idQuestion;
     public int IdQuestion => idQuestion;
 
     [SerializeField] private TileData questionData;
@@ -23,14 +23,14 @@ public class TileQuestion : MonoBehaviour, IPointerClickHandler
     [SerializeField] private TileManager tileManager;
 
     [Header("=== СОСТОЯНИЕ ===")]
-    [SerializeField] private int wrongAttempts;
+    private int wrongAttempts;
     public int WrongAttempts
     {
         get { return wrongAttempts; }
         set { wrongAttempts = value; }
     }
 
-    [SerializeField] private int tempWrongAttempts;
+    private int tempWrongAttempts;
     public int TempWrongAttempts
     {
         get { return tempWrongAttempts; }

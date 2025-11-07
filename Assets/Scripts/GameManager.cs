@@ -34,10 +34,16 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject ButtonGoToFinal;
 
     [SerializeField] private TileManager tileManager;
+
+    private void OnEnable()
+    {
+        SceneMenu.SetActive(true);
+        SceneGame.SetActive(true);
+        SceneEnd.SetActive(false);
+    }
     void Start()
     {
         Application.targetFrameRate = 120;
-        
     }
     public void GoToGame()
     {
