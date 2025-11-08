@@ -228,18 +228,6 @@ public class TileData : MonoBehaviour
         Debug.Log($"Всего ответов: {answerOptions.Length}");
     }
 
-    // Метод для принудительной перезагрузки нового случайного вопроса
-    public void ReloadRandomQuestion()
-    {
-        if (!useDatabase)
-        {
-            Debug.LogWarning("Режим перезагрузки недоступен при ручном вводе данных");
-            return;
-        }
-
-        isDataLoaded = false;
-        StartCoroutine(LoadRandomQuestionByType(questionType));
-    }
 }
 
 

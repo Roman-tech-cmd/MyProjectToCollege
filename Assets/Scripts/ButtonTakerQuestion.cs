@@ -9,13 +9,11 @@ public class ButtonTakerQuestion : MonoBehaviour
     private void OnEnable()
     {
         tileManager = GameObject.FindGameObjectWithTag("TileManager").GetComponent<TileManager>();
-        // Подписываемся на событие нажатия
         GetComponent<Button>().onClick.AddListener(OnAnswerSelected);
     }
 
     private void OnDisable()
     {
-        // Отписываемся от события
         GetComponent<Button>().onClick.RemoveListener(OnAnswerSelected);
     }
 

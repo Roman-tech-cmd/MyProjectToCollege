@@ -4,27 +4,19 @@ using System;
 
 public class CounterAnswer : MonoBehaviour
 {
-    [SerializeField] private int countIncorrectAnswer;
-    [SerializeField] private TextMeshProUGUI textIncorrectAnswer;
+    [SerializeField] private TextMeshProUGUI textСorrectAnswer;
     [SerializeField] private int countCorrectAnswer;
 
 
     private void Start()
     {
-        countIncorrectAnswer = 0;
-        TileManager.CounterIncorrectAnswer += IncIncorrectAnswer;
+        countCorrectAnswer = 0;
         TileManager.CounterСorrectAnswer += IncCorrectAnswer;
-    }
-
-    public void IncIncorrectAnswer()
-    {
-        countIncorrectAnswer++;
-        //textIncorrectAnswer.SetText($"Количество допущенных ошибок: {countIncorrectAnswer.ToString()}");
     }
     
     public void IncCorrectAnswer()
     {
         countCorrectAnswer++;
-        textIncorrectAnswer.SetText($"Количество правильных ответов: {countCorrectAnswer.ToString()} из 27");
+        textСorrectAnswer.SetText($"Количество правильных ответов: {countCorrectAnswer.ToString()} из 27");
     }
 }
