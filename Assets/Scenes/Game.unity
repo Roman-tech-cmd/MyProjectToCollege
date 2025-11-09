@@ -5245,7 +5245,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 145.99957, y: 0.0018692017}
+  m_AnchoredPosition: {x: 121.2, y: 0.0018692017}
   m_SizeDelta: {x: 56.2654, y: 125}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &952531889
@@ -12056,7 +12056,7 @@ PrefabInstance:
     - target: {fileID: 500356692243693454, guid: e97305fbd93494d41bed2fef81c3bdf9, type: 3}
       propertyPath: questionData
       value: 
-      objectReference: {fileID: 11400000, guid: 97088bbab4c92d64790737e7ebb1dd9c, type: 2}
+      objectReference: {fileID: 5127119}
     - target: {fileID: 500356692243693454, guid: e97305fbd93494d41bed2fef81c3bdf9, type: 3}
       propertyPath: takeImageFromData
       value: 1
@@ -12357,7 +12357,7 @@ PrefabInstance:
     - target: {fileID: 3609481059110794190, guid: e97305fbd93494d41bed2fef81c3bdf9, type: 3}
       propertyPath: questionData
       value: 
-      objectReference: {fileID: 11400000, guid: bd98958f3303166448b9088ae384a7b3, type: 2}
+      objectReference: {fileID: 1785385129}
     - target: {fileID: 3609481059110794190, guid: e97305fbd93494d41bed2fef81c3bdf9, type: 3}
       propertyPath: takeImageFromData
       value: 1
@@ -12560,7 +12560,7 @@ PrefabInstance:
     - target: {fileID: 5914035883626854089, guid: e97305fbd93494d41bed2fef81c3bdf9, type: 3}
       propertyPath: questionData
       value: 
-      objectReference: {fileID: 11400000, guid: 12cf2c154b4aa3042a70c6e45472de14, type: 2}
+      objectReference: {fileID: 139716252}
     - target: {fileID: 5914035883626854089, guid: e97305fbd93494d41bed2fef81c3bdf9, type: 3}
       propertyPath: takeImageFromData
       value: 1
@@ -12680,7 +12680,7 @@ PrefabInstance:
     - target: {fileID: 7056107550539587176, guid: e97305fbd93494d41bed2fef81c3bdf9, type: 3}
       propertyPath: questionData
       value: 
-      objectReference: {fileID: 11400000, guid: 6305d787feb0da84cb7f636fdd2c3d2a, type: 2}
+      objectReference: {fileID: 2107295495}
     - target: {fileID: 7056107550539587176, guid: e97305fbd93494d41bed2fef81c3bdf9, type: 3}
       propertyPath: takeImageFromData
       value: 1
@@ -12692,7 +12692,7 @@ PrefabInstance:
     - target: {fileID: 7109613624069476085, guid: e97305fbd93494d41bed2fef81c3bdf9, type: 3}
       propertyPath: questionData
       value: 
-      objectReference: {fileID: 11400000, guid: d33606c26af50614db4f0cabc9ed63f9, type: 2}
+      objectReference: {fileID: 533635100}
     - target: {fileID: 7109613624069476085, guid: e97305fbd93494d41bed2fef81c3bdf9, type: 3}
       propertyPath: takeImageFromData
       value: 1
@@ -12967,7 +12967,7 @@ PrefabInstance:
     - target: {fileID: 8320857720035178010, guid: e97305fbd93494d41bed2fef81c3bdf9, type: 3}
       propertyPath: questionData
       value: 
-      objectReference: {fileID: 11400000, guid: cef9b679e9fdf0a49a56f8e0cc62e315, type: 2}
+      objectReference: {fileID: 111947015}
     - target: {fileID: 8320857720035178010, guid: e97305fbd93494d41bed2fef81c3bdf9, type: 3}
       propertyPath: takeImageFromData
       value: 1

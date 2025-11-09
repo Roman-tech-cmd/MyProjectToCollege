@@ -270,22 +270,22 @@ public class TileManager : MonoBehaviour
         SelectedTiles = tile;
         tile.IsSelected = true;
 
-        if (selectedTiles != null && textQuestion != null)
+        if (SelectedTiles != null && textQuestion != null)
         {
             print("КУ");
-            textQuestion.text = selectedTiles.Question;
+            textQuestion.text = SelectedTiles.Question;
         }
 
         for (int i = 0; i < buttons.Length; i++)
         {
-            if (selectedTiles == null) return;
-            if (i < selectedTiles.AnswerOptions.Length)
+            if (SelectedTiles == null) return;
+            if (i < SelectedTiles.AnswerOptions.Length)
             {
                 buttons[i].SetActive(true);
                 TextMeshProUGUI buttonText = buttons[i].GetComponentInChildren<TextMeshProUGUI>();
                 if (buttonText != null)
                 {
-                    buttonText.text = selectedTiles.AnswerOptions[i];
+                    buttonText.text = SelectedTiles.AnswerOptions[i];
                 }
 
                 ButtonTakerQuestion buttonHandler = buttons[i].GetComponent<ButtonTakerQuestion>();
@@ -309,22 +309,22 @@ public class TileManager : MonoBehaviour
         hintMenu.transform.DOLocalMoveX(1330, 0.5f);
         hintsTextUI.text = "";
 
-        if (selectedTiles.IsSolved) blockMenu.SetActive(true);
+        if (SelectedTiles.IsSolved) blockMenu.SetActive(true);
         else blockMenu.SetActive(false);
     }
 
     public void CheckAnswer(int selectedAnswerIndex)
     {
-        if (selectedAnswerIndex == selectedTiles.CorrectButtonId - 1)
+        if (selectedAnswerIndex == SelectedTiles.CorrectButtonId - 1)
         {
-            selectedTiles.IsSolved = true;
+            SelectedTiles.IsSolved = true;
             blockMenu.SetActive(true);
             blockMenu2.SetActive(true);
-            FlipCardColors(selectedTiles.GetComponent<RectTransform>(), selectedTiles.GetComponent<Image>(), Color.white, Color.green);
+            FlipCardColors(SelectedTiles.GetComponent<RectTransform>(), SelectedTiles.GetComponent<Image>(), Color.white, Color.green);
 
             PlayExpressiveSuccessAnimation(buttons[selectedAnswerIndex]);
 
-            if (selectedTiles.WrongAttempts == 0)
+            if (SelectedTiles.WrongAttempts == 0)
             {
                 print("Ты ответил с первого раза! это Плюс 1");
                 CounterСorrectAnswer?.Invoke();

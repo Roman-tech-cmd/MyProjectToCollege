@@ -98,13 +98,12 @@ public class TileQuestion : MonoBehaviour, IPointerClickHandler
         if (tileManager == null)
             tileManager = GameObject.FindGameObjectWithTag("TileManager").GetComponent<TileManager>();
 
-        question = questionData.question;
-        imageQuestion = takeImageFromData ? questionData.imageQuestion : imageQuestionHandler;
-        answerOptions = questionData.answerOptions;
-        hints = questionData.hints;
-        hintsImage = questionData.hintImage;
-
-        
+            question = questionData.question;
+            imageQuestion = takeImageFromData ? questionData.imageQuestion : imageQuestionHandler;
+            answerOptions = questionData.answerOptions;
+            hints = questionData.hints;
+            hintsImage = questionData.hintImage;
+           
     }
 
     public void OnPointerClick(PointerEventData eventData)
