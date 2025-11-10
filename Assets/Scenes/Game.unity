@@ -13103,7 +13103,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9051305587154282440, guid: e97305fbd93494d41bed2fef81c3bdf9, type: 3}
       propertyPath: 'answerOptions.Array.data[1]'
-      value: "\u0413\u043E\u0440\u043E\u0434 \u0411\u0440\u0435\u0441\u0442"
+      value: "\u0411\u0440\u0435\u0441\u0442\u0441\u043A\u0430\u044F \u043E\u0431\u043B\u0430\u0441\u0442\u044C"
       objectReference: {fileID: 0}
     - target: {fileID: 9051305587154282440, guid: e97305fbd93494d41bed2fef81c3bdf9, type: 3}
       propertyPath: 'answerOptions.Array.data[2]'
