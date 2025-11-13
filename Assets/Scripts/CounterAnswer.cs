@@ -17,6 +17,6 @@ public class CounterAnswer : MonoBehaviour
     public void IncCorrectAnswer()
     {
         countCorrectAnswer++;
-        textСorrectAnswer.SetText($"Количество верных ответов: {countCorrectAnswer.ToString()} из 27");
+        textСorrectAnswer.SetText($"Количество верных ответов {countCorrectAnswer.ToString()} / 27");
     }
 }
