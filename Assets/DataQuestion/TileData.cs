@@ -1,117 +1,129 @@
-using UnityEngine;
-using System.Collections;
 using Mono.Data.Sqlite;
+using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Networking;
 
 public class TileData : MonoBehaviour
 {
-
     [Tooltip("Номер вопроса")]
     public int idQuestion;
 
-    [Space(10)]
     [Header("Режим загрузки")]
-    [Tooltip("Если true - данные загружаются из БД, если false - вводятся вручную в инспекторе")]
     public bool useDatabase = true;
-    [Space(10)]
 
     [Header("Настройки типа вопроса")]
-    [Tooltip("Тип вопроса (1 или 2) - задается в инспекторе")]
     public int questionType = 1;
-
-    [Tooltip("Изображение вопроса")]
     public Sprite imageQuestion;
 
     [Header("Основные данные")]
-    [Tooltip("Текст вопроса")]
-    [TextArea]
-    public string question;
+    [TextArea] public string question;
 
     [Header("Варианты ответов")]
-    [Tooltip("Массив с вариантами ответов (включая правильный)")]
     public string[] answerOptions;
-
-    [Tooltip("Правильный ответ текст")]
     public string correctAnswer;
 
     [Header("Подсказки")]
-    [Tooltip("Массив с подсказками к вопросу")]
     public string hints;
     public Sprite hintImage;
 
     private static Dictionary<int, List<int>> availableQuestionIdsByType = new Dictionary<int, List<int>>();
     private bool isDataLoaded = false;
 
-
-
-    public void Start()
+    void Start()
     {
-        // Инициализируем словарь для типов вопросов
         if (availableQuestionIdsByType.Count == 0)
         {
             availableQuestionIdsByType.Add(1, new List<int>());
             availableQuestionIdsByType.Add(2, new List<int>());
         }
 
-        // Только если используем БД - загружаем данные
         if (useDatabase)
-        {
             LoadQuestionOfSpecifiedType();
-        }
         else
         {
-            // В ручном режиме оставляем значения из инспектора как есть
             isDataLoaded = true;
             Debug.Log("Используется ручной ввод данных");
         }
+
+
     }
 
-    // Метод для загрузки вопроса указанного в инспекторе типа
-    public void LoadQuestionOfSpecifiedType()
+    void DebugListTables(string dbPath)
     {
-        if (!isDataLoaded && useDatabase)
+        try
         {
-            StartCoroutine(LoadRandomQuestionByType(questionType));
+            string connectionString = "URI=file:" + dbPath;
+            using (IDbConnection dbcon = new SqliteConnection(connectionString))
+            {
+                dbcon.Open();
+
+                using (IDbCommand cmd = dbcon.CreateCommand())
+                {
+                    // Запросим список всех таблиц
+                    cmd.CommandText = "SELECT name FROM sqlite_master WHERE type='table'";
+                    using (IDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            Debug.Log("Таблица: " + reader.GetString(0));
+                        }
+                    }
+                }
+            }
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError("Ошибка при проверке таблиц: " + ex.Message);
         }
     }
 
-    // Метод для загрузки случайного вопроса по типу
-    public IEnumerator LoadRandomQuestionByType(int type)
+
+    public void LoadQuestionOfSpecifiedType()
+    {
+        if (!isDataLoaded && useDatabase)
+            StartCoroutine(LoadRandomQuestionByType(questionType));
+    }
+
+    IEnumerator LoadRandomQuestionByType(int type)
     {
         if (isDataLoaded || !useDatabase) yield break;
 
         questionType = type;
-        string dbPath = Path.Combine(Application.streamingAssetsPath, "QuestionDatabase.db");
 
-#if UNITY_ANDROID || UNITY_WEBGL
-        // Для мобильных платформ
-        yield return StartCoroutine(LoadRandomQuestionMobile(dbPath, type));
-#else
-        // Для Windows/Mac
-        if (File.Exists(dbPath))
-        {
-            LoadRandomQuestionFromDatabase(dbPath, type);
-        }
-        yield return null;
-#endif
-    }
+        string dbFileName = "QuestionDatabase.db";
+        string persistentPath = Path.Combine(Application.persistentDataPath, dbFileName);
 
-    IEnumerator LoadRandomQuestionMobile(string dbPath, int type)
-    {
-        using (var www = UnityEngine.Networking.UnityWebRequest.Get(dbPath))
+        // Если базы нет в persistentDataPath — копируем из StreamingAssets
+        if (!File.Exists(persistentPath))
         {
+            string sourcePath = Path.Combine(Application.streamingAssetsPath, dbFileName);
+
+#if UNITY_ANDROID
+            UnityWebRequest www = UnityWebRequest.Get(sourcePath);
             yield return www.SendWebRequest();
 
-            if (www.result == UnityEngine.Networking.UnityWebRequest.Result.Success)
+            if (www.result == UnityWebRequest.Result.Success)
             {
-                string tempPath = Path.Combine(Application.persistentDataPath, "temp_question.db");
-                File.WriteAllBytes(tempPath, www.downloadHandler.data);
-                LoadRandomQuestionFromDatabase(tempPath, type);
-                File.Delete(tempPath);
+                File.WriteAllBytes(persistentPath, www.downloadHandler.data);
+                Debug.Log("База скопирована в persistentDataPath: " + persistentPath);
             }
+            else
+            {
+                Debug.LogError("Не удалось загрузить базу: " + www.error);
+                yield break;
+            }
+#else
+            File.Copy(sourcePath, persistentPath);
+#endif
         }
+
+        // Загружаем вопрос из базы
+        LoadRandomQuestionFromDatabase(persistentPath, type);
+        Debug.Log("Размер базы: " + new FileInfo(persistentPath).Length + " байт");
+        DebugListTables(persistentPath);
     }
 
     void LoadRandomQuestionFromDatabase(string dbPath, int type)
@@ -123,7 +135,6 @@ public class TileData : MonoBehaviour
             {
                 dbcon.Open();
 
-                // Получаем список всех ID вопросов для указанного типа
                 if (availableQuestionIdsByType[type].Count == 0)
                 {
                     using (IDbCommand cmd = dbcon.CreateCommand())
@@ -132,12 +143,9 @@ public class TileData : MonoBehaviour
                         using (IDataReader reader = cmd.ExecuteReader())
                         {
                             while (reader.Read())
-                            {
                                 availableQuestionIdsByType[type].Add(reader.GetInt32(0));
-                            }
                         }
                     }
-
                     Debug.Log($"Загружено вопросов типа {type}: {availableQuestionIdsByType[type].Count}");
                 }
 
@@ -147,12 +155,10 @@ public class TileData : MonoBehaviour
                     return;
                 }
 
-                // Выбираем случайный ID вопроса из нужного типа
                 int randomIndex = Random.Range(0, availableQuestionIdsByType[type].Count);
                 int randomQuestionId = availableQuestionIdsByType[type][randomIndex];
                 availableQuestionIdsByType[type].RemoveAt(randomIndex);
 
-                // Загружаем данные выбранного вопроса
                 LoadQuestionData(dbcon, randomQuestionId, type);
 
                 isDataLoaded = true;
@@ -167,7 +173,6 @@ public class TileData : MonoBehaviour
 
     void LoadQuestionData(IDbConnection dbcon, int questionId, int type)
     {
-        // Загружаем текст вопроса, тип и подсказку
         using (IDbCommand cmd = dbcon.CreateCommand())
         {
             cmd.CommandText = $"SELECT QuestionText, QuestionType, HintText FROM Questions WHERE Id = {questionId}";
@@ -179,19 +184,13 @@ public class TileData : MonoBehaviour
                     questionType = reader.GetInt32(1);
                     idQuestion = questionId;
 
-                    // Загружаем подсказку если есть
                     if (!reader.IsDBNull(2))
-                    {
                         hints = reader.GetString(2);
-                    }
                 }
             }
         }
 
-        // Загружаем ответы для этого вопроса
         List<string> answers = new List<string>();
-        string correctAnswerText = "";
-
         using (IDbCommand cmd = dbcon.CreateCommand())
         {
             cmd.CommandText = $"SELECT AnswerText, IsCorrect FROM Answers WHERE QuestionId = {questionId}";
@@ -203,31 +202,15 @@ public class TileData : MonoBehaviour
                     bool isCorrect = reader.GetBoolean(1);
 
                     answers.Add(answerText);
-
-                    if (isCorrect)
-                    {
-                        correctAnswer = answerText;
-                        correctAnswerText = answerText;
-                    }
+                    if (isCorrect) correctAnswer = answerText;
                 }
             }
         }
 
-        // Проверяем что загружено 4 ответа
-        if (answers.Count != 4)
-        {
-            Debug.LogWarning($"Вопрос {questionId} имеет {answers.Count} ответов вместо 4!");
-        }
-
-        // Записываем ответы в массив
         answerOptions = answers.ToArray();
 
-        Debug.Log($"Загружен вопрос типа {type}: {question}");
+        Debug.Log($"Вопрос {questionId}: {question}");
         Debug.Log($"Правильный ответ: {correctAnswer}");
         Debug.Log($"Подсказка: {hints}");
-        Debug.Log($"Всего ответов: {answerOptions.Length}");
     }
-
 }
-
-
