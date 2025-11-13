@@ -45,9 +45,13 @@ public class TileData : MonoBehaviour
     private bool isDataLoaded = false;
 
 
+    TileQuestion tileQuestion;
+
 
     public void Start()
     {
+        tileQuestion = GetComponent<TileQuestion>();
+
         // Инициализируем словарь для типов вопросов
         if (availableQuestionIdsByType.Count == 0)
         {
@@ -188,15 +192,14 @@ public class TileData : MonoBehaviour
             }
         }
 
-        // Загружаем ответы для этого вопроса
         List<string> answers = new List<string>();
-        string correctAnswerText = "";
 
         using (IDbCommand cmd = dbcon.CreateCommand())
         {
             cmd.CommandText = $"SELECT AnswerText, IsCorrect FROM Answers WHERE QuestionId = {questionId}";
             using (IDataReader reader = cmd.ExecuteReader())
             {
+                int index = 0;
                 while (reader.Read())
                 {
                     string answerText = reader.GetString(0);
@@ -207,27 +210,19 @@ public class TileData : MonoBehaviour
                     if (isCorrect)
                     {
                         correctAnswer = answerText;
-                        correctAnswerText = answerText;
+                        // Сохраняем индекс правильного ответа
+                        tileQuestion.CorrectButtonId = index + 1; // если у тебя проверка идёт с -1
                     }
+                    index++;
                 }
             }
         }
 
-        // Проверяем что загружено 4 ответа
-        if (answers.Count != 4)
-        {
-            Debug.LogWarning($"Вопрос {questionId} имеет {answers.Count} ответов вместо 4!");
-        }
-
-        // Записываем ответы в массив
         answerOptions = answers.ToArray();
-
-        Debug.Log($"Загружен вопрос типа {type}: {question}");
-        Debug.Log($"Правильный ответ: {correctAnswer}");
-        Debug.Log($"Подсказка: {hints}");
-        Debug.Log($"Всего ответов: {answerOptions.Length}");
     }
-
 }
-
+        //Debug.Log($"Загружен вопрос типа {type}: {question}");
+        //Debug.Log($"Правильный ответ: {correctAnswer}");
+        //Debug.Log($"Подсказка: {hints}");
+        //Debug.Log($"Всего ответов: {answerOptions.Length}");
 

@@ -16,7 +16,7 @@ public class RandomPosButton : MonoBehaviour
 
     public void RandomPos()
     {
-        // Создаём копии списков, чтобы безопасно удалять
+        // Копируем списки
         availablePoints = new List<GameObject>(pointsButtons);
         availableButtons = new List<GameObject>(answerButtons);
 
@@ -27,24 +27,17 @@ public class RandomPosButton : MonoBehaviour
             return;
         }
 
-        // Перемешиваем кнопки по точкам
-        while (availableButtons.Count > 0)
+        // Перемещаем каждую кнопку в случайную точку
+        foreach (GameObject button in availableButtons)
         {
-            // Берём случайную кнопку
-            int buttonIndex = Random.Range(0, availableButtons.Count);
-            GameObject selectedButton = availableButtons[buttonIndex];
-
-            // Берём случайную точку
             int pointIndex = Random.Range(0, availablePoints.Count);
             GameObject targetPoint = availablePoints[pointIndex];
 
-            // Перемещаем кнопку к точке
-            selectedButton.transform.SetParent(targetPoint.transform);
-            selectedButton.transform.localPosition = Vector3.zero;
-            selectedButton.transform.localRotation = Quaternion.identity;
+            button.transform.SetParent(targetPoint.transform);
+            button.transform.localPosition = Vector3.zero;
+            button.transform.localRotation = Quaternion.identity;
 
-            // Удаляем из списков, чтобы не назначить дважды
-            availableButtons.RemoveAt(buttonIndex);
+            // Убираем использованную точку
             availablePoints.RemoveAt(pointIndex);
         }
     }

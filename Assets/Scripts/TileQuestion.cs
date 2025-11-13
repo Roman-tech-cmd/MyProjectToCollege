@@ -51,10 +51,14 @@ public class TileQuestion : MonoBehaviour, IPointerClickHandler
     private Sprite imageQuestion;
     public Sprite ImageQuestion => imageQuestion;
 
-    private int correctButtonId;
-    public int CorrectButtonId => correctButtonId;
+    [SerializeField] private int correctButtonId;
+    public int CorrectButtonId
+    {
+        get { return correctButtonId; }
+        set { correctButtonId = value; }
+    }
 
-    private string[] answerOptions;
+    [SerializeField] private string[] answerOptions;
     public string[] AnswerOptions => answerOptions;
 
     private string hints;

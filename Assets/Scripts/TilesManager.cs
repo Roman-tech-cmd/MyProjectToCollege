@@ -74,6 +74,9 @@ public class TileManager : MonoBehaviour
 
 
     [Header("=== СОСТОЯНИЕ БЛОКОВ ===")]
+
+    [SerializeField] private RandomPosButton randomPosButton;
+
     [SerializeField] private bool isTileBox1Solved;
     public bool IsTileBox1Solved
     {
@@ -234,6 +237,7 @@ public class TileManager : MonoBehaviour
     
     public void SetTileBox(int NumBox)
     {        
+
         switch (NumBox)
         {   
             case 1:
@@ -311,6 +315,7 @@ public class TileManager : MonoBehaviour
 
         if (SelectedTiles.IsSolved) blockMenu.SetActive(true);
         else blockMenu.SetActive(false);
+        randomPosButton.RandomPos();
     }
 
     public void CheckAnswer(int selectedAnswerIndex)
