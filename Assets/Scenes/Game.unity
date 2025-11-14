@@ -11584,7 +11584,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u0417\u0430\u0432\u0435\u0440\u0448\u0438\u0442\u044C \u0438\u0433\u0440\u0443"
+  m_text: "\u0417\u0430\u0432\u0435\u0440\u0448\u0438\u0442\u044C \u0432\u0438\u043A\u0442\u043E\u0440\u0438\u043D\u0443"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 9e783fb88a491494a8de56feece3c7c0, type: 2}
   m_sharedMaterial: {fileID: 5883798315078568854, guid: 9e783fb88a491494a8de56feece3c7c0, type: 2}
@@ -11611,7 +11611,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 40
+  m_fontSize: 34.65
   m_fontSizeBase: 35
   m_fontWeight: 400
   m_enableAutoSizing: 1
