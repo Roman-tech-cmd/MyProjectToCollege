@@ -1,8 +1,9 @@
-using UnityEngine;
-using TMPro;
-using UnityEngine.UI;
 using DG.Tweening;
 using System;
+using System.Linq;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
 
 
 public class TileManager : MonoBehaviour
@@ -280,16 +281,23 @@ public class TileManager : MonoBehaviour
             textQuestion.text = SelectedTiles.Question;
         }
 
+        if (SelectedTiles == null) return;
+
+        // Берём массив ответов и перемешиваем
+        string[] shuffledAnswers = SelectedTiles.AnswerOptions
+            .OrderBy(x => UnityEngine.Random.value) // Random.value даёт float от 0 до 1
+            .ToArray();
+
         for (int i = 0; i < buttons.Length; i++)
         {
-            if (SelectedTiles == null) return;
-            if (i < SelectedTiles.AnswerOptions.Length)
+            if (i < shuffledAnswers.Length)
             {
                 buttons[i].SetActive(true);
+
                 TextMeshProUGUI buttonText = buttons[i].GetComponentInChildren<TextMeshProUGUI>();
                 if (buttonText != null)
                 {
-                    buttonText.text = SelectedTiles.AnswerOptions[i];
+                    buttonText.text = shuffledAnswers[i];
                 }
 
                 ButtonTakerQuestion buttonHandler = buttons[i].GetComponent<ButtonTakerQuestion>();

@@ -7,7 +7,6 @@ using System.Collections.Generic;
 
 public class TileData : MonoBehaviour
 {
-
     [Tooltip("Номер вопроса")]
     public int idQuestion;
 
@@ -41,12 +40,15 @@ public class TileData : MonoBehaviour
     public string hints;
     public Sprite hintImage;
 
+    [Header("Настройки перемешивания")]
+    [Tooltip("Если true - ответы будут перемешаны после загрузки")]
+    public bool shuffleAnswers = true;
+
     private static Dictionary<int, List<int>> availableQuestionIdsByType = new Dictionary<int, List<int>>();
     private bool isDataLoaded = false;
-
+    private int originalCorrectButtonId = -1; // Для хранения оригинального ID правильной кнопки до перемешивания
 
     TileQuestion tileQuestion;
-
 
     public void Start()
     {
@@ -210,8 +212,8 @@ public class TileData : MonoBehaviour
                     if (isCorrect)
                     {
                         correctAnswer = answerText;
-                        // Сохраняем индекс правильного ответа
-                        tileQuestion.CorrectButtonId = index + 1; // если у тебя проверка идёт с -1
+                        originalCorrectButtonId = index + 1; // Сохраняем оригинальный ID
+                        tileQuestion.CorrectButtonId = index + 1;
                     }
                     index++;
                 }
@@ -219,10 +221,55 @@ public class TileData : MonoBehaviour
         }
 
         answerOptions = answers.ToArray();
+
+        // Перемешиваем ответы если включена опция
+        if (shuffleAnswers && answerOptions.Length > 1)
+        {
+            ShuffleAnswers();
+        }
+    }
+
+    // Метод для перемешивания ответов
+    private void ShuffleAnswers()
+    {
+        // Создаем список пар: ответ + его оригинальный индекс
+        List<(string answer, int originalIndex)> answersWithIndices = new List<(string, int)>();
+        for (int i = 0; i < answerOptions.Length; i++)
+        {
+            answersWithIndices.Add((answerOptions[i], i + 1)); // +1 потому что кнопки нумеруются с 1
+        }
+
+        // Перемешиваем список
+        for (int i = 0; i < answersWithIndices.Count; i++)
+        {
+            int randomIndex = Random.Range(i, answersWithIndices.Count);
+            var temp = answersWithIndices[i];
+            answersWithIndices[i] = answersWithIndices[randomIndex];
+            answersWithIndices[randomIndex] = temp;
+        }
+
+        // Обновляем массив ответов
+        for (int i = 0; i < answerOptions.Length; i++)
+        {
+            answerOptions[i] = answersWithIndices[i].answer;
+
+            // Если это перемещенный правильный ответ, обновляем CorrectButtonId
+            if (answersWithIndices[i].originalIndex == originalCorrectButtonId)
+            {
+                tileQuestion.CorrectButtonId = i + 1;
+                Debug.Log($"Правильный ответ перемещен с позиции {originalCorrectButtonId} на позицию {i + 1}");
+            }
+        }
+
+        Debug.Log($"Ответы перемешаны. Правильный ответ теперь на позиции: {tileQuestion.CorrectButtonId}");
+    }
+
+    // Дополнительный метод для принудительного перемешивания (можно вызвать извне)
+    public void ShuffleAnswersManually()
+    {
+        if (answerOptions != null && answerOptions.Length > 1)
+        {
+            ShuffleAnswers();
+        }
     }
 }
-        //Debug.Log($"Загружен вопрос типа {type}: {question}");
-        //Debug.Log($"Правильный ответ: {correctAnswer}");
-        //Debug.Log($"Подсказка: {hints}");
-        //Debug.Log($"Всего ответов: {answerOptions.Length}");
-
